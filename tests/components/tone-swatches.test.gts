@@ -22,7 +22,10 @@ describe("ToneSwatches", () => {
     await using ctx = await setupRenderingContext();
     const tokens = makeTokens("blue");
 
-    await ctx.render(<template><ToneSwatches @tokens={{tokens}} /></template>);
+    await ctx.render(
+      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
+      <template><ToneSwatches @tokens={{tokens}} /></template>,
+    );
 
     const swatches = ctx.element.querySelectorAll("[title^='--color-blue-']");
     expect(swatches.length).toBe(TONES.length);
@@ -32,7 +35,10 @@ describe("ToneSwatches", () => {
     await using ctx = await setupRenderingContext();
     const tokens = makeTokens("emerald");
 
-    await ctx.render(<template><ToneSwatches @tokens={{tokens}} /></template>);
+    await ctx.render(
+      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
+      <template><ToneSwatches @tokens={{tokens}} /></template>,
+    );
 
     expect(ctx.element.textContent).toContain("emerald");
   });
@@ -41,7 +47,10 @@ describe("ToneSwatches", () => {
     await using ctx = await setupRenderingContext();
     const tokens: ColourToken[] = [...makeTokens("blue"), ...makeTokens("red")];
 
-    await ctx.render(<template><ToneSwatches @tokens={{tokens}} /></template>);
+    await ctx.render(
+      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
+      <template><ToneSwatches @tokens={{tokens}} /></template>,
+    );
 
     expect(ctx.element.textContent).toContain("blue");
     expect(ctx.element.textContent).toContain("red");
@@ -51,7 +60,10 @@ describe("ToneSwatches", () => {
     await using ctx = await setupRenderingContext();
     const tokens: ColourToken[] = [];
 
-    await ctx.render(<template><ToneSwatches @tokens={{tokens}} /></template>);
+    await ctx.render(
+      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
+      <template><ToneSwatches @tokens={{tokens}} /></template>,
+    );
 
     expect(ctx.element.textContent?.trim()).toBe("");
   });

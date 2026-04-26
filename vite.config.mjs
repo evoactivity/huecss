@@ -23,6 +23,9 @@ export default defineConfig({
       localsConvention: "camelCaseOnly",
     },
   },
+  optimizeDeps: {
+    include: ["ember-source > @ember/service/index.js"],
+  },
   test: {
     include: ["tests/**/*.test.{gjs,gts,ts}"],
     maxConcurrency: 1,

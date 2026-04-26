@@ -9,7 +9,10 @@ describe("CssOutput", () => {
   test("renders the CSS output toggle label", async () => {
     await using ctx = await setupRenderingContext();
 
-    await ctx.render(<template><CssOutput @css={{SAMPLE_CSS}} /></template>);
+    await ctx.render(
+      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
+      <template><CssOutput @css={{SAMPLE_CSS}} /></template>,
+    );
 
     expect(ctx.element.textContent?.toLowerCase()).toContain("css output");
   });
@@ -17,7 +20,10 @@ describe("CssOutput", () => {
   test("code block is visible by default (isOpen = true)", async () => {
     await using ctx = await setupRenderingContext();
 
-    await ctx.render(<template><CssOutput @css={{SAMPLE_CSS}} /></template>);
+    await ctx.render(
+      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
+      <template><CssOutput @css={{SAMPLE_CSS}} /></template>,
+    );
 
     const codeBlock = ctx.element.querySelector("[class*='codeBlock']");
     expect(codeBlock).toBeTruthy();
@@ -26,7 +32,10 @@ describe("CssOutput", () => {
   test("clicking toggle hides the code block", async () => {
     await using ctx = await setupRenderingContext();
 
-    await ctx.render(<template><CssOutput @css={{SAMPLE_CSS}} /></template>);
+    await ctx.render(
+      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
+      <template><CssOutput @css={{SAMPLE_CSS}} /></template>,
+    );
 
     const toggle = ctx.element.querySelector("[class*='toggle']") as HTMLElement;
     await click(toggle);
@@ -38,7 +47,10 @@ describe("CssOutput", () => {
   test("clicking toggle twice restores the code block", async () => {
     await using ctx = await setupRenderingContext();
 
-    await ctx.render(<template><CssOutput @css={{SAMPLE_CSS}} /></template>);
+    await ctx.render(
+      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
+      <template><CssOutput @css={{SAMPLE_CSS}} /></template>,
+    );
 
     const toggle = ctx.element.querySelector("[class*='toggle']") as HTMLElement;
     await click(toggle);
@@ -51,7 +63,10 @@ describe("CssOutput", () => {
   test("renders a copy button", async () => {
     await using ctx = await setupRenderingContext();
 
-    await ctx.render(<template><CssOutput @css={{SAMPLE_CSS}} /></template>);
+    await ctx.render(
+      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
+      <template><CssOutput @css={{SAMPLE_CSS}} /></template>,
+    );
 
     const copyButton = Array.from(ctx.element.querySelectorAll("button")).find((b) =>
       b.textContent?.includes("Copy"),
@@ -64,7 +79,10 @@ describe("CssOutput", () => {
     // Mock clipboard API -- navigator.clipboard is read-only so use defineProperty
     vi.spyOn(navigator.clipboard, "writeText").mockResolvedValue(undefined);
 
-    await ctx.render(<template><CssOutput @css={{SAMPLE_CSS}} /></template>);
+    await ctx.render(
+      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
+      <template><CssOutput @css={{SAMPLE_CSS}} /></template>,
+    );
 
     const copyButton = Array.from(ctx.element.querySelectorAll("button")).find((b) =>
       b.textContent?.includes("Copy"),

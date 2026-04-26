@@ -9,6 +9,7 @@ describe("AppHeader", () => {
     const onModeChange = vi.fn();
 
     await ctx.render(
+      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
       <template><AppHeader @interpolationMode="oklch" @onModeChange={{onModeChange}} /></template>,
     );
 
@@ -20,6 +21,7 @@ describe("AppHeader", () => {
     const onModeChange = vi.fn();
 
     await ctx.render(
+      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
       <template><AppHeader @interpolationMode="oklch" @onModeChange={{onModeChange}} /></template>,
     );
 
@@ -37,6 +39,7 @@ describe("AppHeader", () => {
     const onModeChange = vi.fn();
 
     await ctx.render(
+      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
       <template><AppHeader @interpolationMode="oklab" @onModeChange={{onModeChange}} /></template>,
     );
 
@@ -49,6 +52,7 @@ describe("AppHeader", () => {
     const onModeChange = vi.fn();
 
     await ctx.render(
+      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
       <template><AppHeader @interpolationMode="oklch" @onModeChange={{onModeChange}} /></template>,
     );
 

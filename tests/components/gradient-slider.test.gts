@@ -11,6 +11,7 @@ describe("GradientSlider", () => {
     const onChange = vi.fn();
 
     await ctx.render(
+      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
       <template>
         <GradientSlider
           @label="Lightness"
@@ -34,6 +35,7 @@ describe("GradientSlider", () => {
     const onChange = vi.fn();
 
     await ctx.render(
+      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
       <template>
         <GradientSlider
           @label="Lightness"
@@ -57,6 +59,7 @@ describe("GradientSlider", () => {
     const onChange = vi.fn();
 
     await ctx.render(
+      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
       <template>
         <GradientSlider
           @label="Lightness"
@@ -84,6 +87,7 @@ describe("GradientSlider", () => {
     const onChange = vi.fn();
 
     await ctx.render(
+      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
       <template>
         <GradientSlider
           @label="Lightness"
