@@ -1,0 +1,6 @@
+node_modules/
+dist/
+.vitest-attachments/
+tests/utils/__screenshots__/
+tests/components/__screenshots__/
+.eslintcache
