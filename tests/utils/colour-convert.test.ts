@@ -1,26 +1,5 @@
 import { describe, test, expect } from "vitest";
-import { parseHex, hexToOklch } from "#utils/colour-convert";
-
-describe("parseHex", () => {
-  test("parses 6-digit hex", () => {
-    expect(parseHex("#ff0000")).toEqual({ r: 255, g: 0, b: 0 });
-    expect(parseHex("ff0000")).toEqual({ r: 255, g: 0, b: 0 });
-  });
-
-  test("parses 3-digit hex by expanding", () => {
-    expect(parseHex("#f00")).toEqual({ r: 255, g: 0, b: 0 });
-  });
-
-  test("parses 8-digit hex ignoring alpha", () => {
-    expect(parseHex("#ff0000ff")).toEqual({ r: 255, g: 0, b: 0 });
-  });
-
-  test("returns null for invalid hex", () => {
-    expect(parseHex("nope")).toBeNull();
-    expect(parseHex("#gg0000")).toBeNull();
-    expect(parseHex("")).toBeNull();
-  });
-});
+import { hexToOklch } from "#utils/colour-convert";
 
 describe("hexToOklch", () => {
   test("white (#ffffff) has L near 1, C near 0", () => {
@@ -37,17 +16,16 @@ describe("hexToOklch", () => {
     expect(result!.c).toBeCloseTo(0, 3);
   });
 
-  test("red (#ff0000) has hue in the red range (around 29deg)", () => {
+  test("red (#ff0000) has hue in the red range (~29deg)", () => {
     const result = hexToOklch("#ff0000");
     expect(result).not.toBeNull();
     expect(result!.l).toBeGreaterThan(0.4);
     expect(result!.c).toBeGreaterThan(0.2);
-    // Red hue in oklch is around 29 degrees
     expect(result!.h).toBeGreaterThan(20);
     expect(result!.h).toBeLessThan(40);
   });
 
-  test("blue (#0000ff) has hue in the blue range (around 264deg)", () => {
+  test("blue (#0000ff) has hue in the blue range (~264deg)", () => {
     const result = hexToOklch("#0000ff");
     expect(result).not.toBeNull();
     expect(result!.h).toBeGreaterThan(250);
@@ -56,6 +34,7 @@ describe("hexToOklch", () => {
 
   test("returns null for invalid input", () => {
     expect(hexToOklch("notahex")).toBeNull();
+    expect(hexToOklch("")).toBeNull();
   });
 
   test("L is always clamped to 0-1", () => {
@@ -64,12 +43,30 @@ describe("hexToOklch", () => {
     expect(result!.l).toBeGreaterThanOrEqual(0);
   });
 
-  test("h is always in 0-360 range", () => {
+  test("h is always a number (no NaN for achromatic)", () => {
+    const result = hexToOklch("#808080");
+    expect(result).not.toBeNull();
+    expect(isNaN(result!.h)).toBe(false);
+  });
+
+  test("h is in 0-360 range for chromatic colours", () => {
     const colours = ["#ff0000", "#00ff00", "#0000ff", "#ffff00", "#ff00ff"];
     for (const hex of colours) {
       const result = hexToOklch(hex);
       expect(result!.h).toBeGreaterThanOrEqual(0);
       expect(result!.h).toBeLessThan(360);
     }
+  });
+
+  test("accepts 3-digit hex", () => {
+    const short = hexToOklch("#f00");
+    const full = hexToOklch("#ff0000");
+    expect(short).not.toBeNull();
+    expect(short!.h).toBeCloseTo(full!.h, 1);
+  });
+
+  test("accepts hex without leading #", () => {
+    const result = hexToOklch("ff0000");
+    expect(result).not.toBeNull();
   });
 });
