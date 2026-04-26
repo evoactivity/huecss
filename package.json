@@ -29,9 +29,8 @@
     "lint:fix": "concurrently \"pnpm:lint:*:fix\" --names \"fix:\" --prefixColors auto && pnpm format",
     "format": "prettier --write .",
     "lint:prettier": "prettier --check .",
-    "build:test": "vite build --mode development",
-    "test:ci": "testem ci --port 0",
-    "test": "pnpm build:test && pnpm test:ci",
+    "test": "vitest",
+    "test:ci": "vitest run",
     "lint:types": "ember-tsc --noEmit"
   },
   "dependencies": {
@@ -56,20 +55,21 @@
     "@glint/template": "1.7.7",
     "@glint/tsserver-plugin": "2.4.0",
     "@rollup/plugin-babel": "6.1.0",
-    "@types/qunit": "2.19.13",
+    "@vitest/browser": "^4.1.5",
+    "@vitest/browser-playwright": "^4.1.5",
+    "@vitest/browser-preview": "^4.1.5",
+    "@vitest/ui": "4.1.5",
     "babel-plugin-ember-template-compilation": "4.0.0",
     "concurrently": "9.2.1",
     "ember-eslint": "0.6.1",
-    "ember-qunit": "9.0.4",
+    "ember-vitest": "^0.3.3",
     "eslint": "9.39.4",
     "prettier": "3.8.3",
     "prettier-plugin-ember-template-tag": "2.1.5",
-    "qunit": "2.25.0",
-    "qunit-dom": "3.5.0",
-    "qunit-theme-ember": "1.0.0",
     "testem": "3.17.0",
     "typescript": "5.9.3",
-    "vite": "7.3.2"
+    "vite": "7.3.2",
+    "vitest": "^4.1.5"
   },
   "engines": {
     "node": ">= 24"
