@@ -6,6 +6,7 @@ import { not } from "#utils/helpers";
 import type { ColourDefinition } from "#utils/colours";
 import { hexToOklch } from "#utils/colour-convert";
 import HueWheel from "#components/hue-wheel/hue-wheel";
+import GradientSlider from "#components/gradient-slider/gradient-slider";
 import styles from "./custom-colour-form.module.css";
 
 interface Signature {
@@ -25,6 +26,49 @@ export default class CustomColourForm extends Component<Signature> {
 
   get previewColour(): string {
     return `oklch(${this.lightness} ${this.chroma} ${this.hue})`;
+  }
+
+  // Lightness gradient: black → current colour → white, keeping C and H fixed.
+  // Using 5 stops so the curve through oklch space is well-sampled.
+  get lightnessGradient(): string {
+    const { chroma: c, hue: h } = this;
+    return [
+      "linear-gradient(to right in oklch,",
+      `oklch(0 ${c} ${h}),`,
+      `oklch(0.25 ${c} ${h}),`,
+      `oklch(0.5 ${c} ${h}),`,
+      `oklch(0.75 ${c} ${h}),`,
+      `oklch(1 ${c} ${h}))`,
+    ].join(" ");
+  }
+
+  // Chroma gradient: gray (C=0) → full saturation (C=0.4), keeping L and H fixed.
+  get chromaGradient(): string {
+    const { lightness: l, hue: h } = this;
+    return [
+      "linear-gradient(to right in oklch,",
+      `oklch(${l} 0 ${h}),`,
+      `oklch(${l} 0.1 ${h}),`,
+      `oklch(${l} 0.2 ${h}),`,
+      `oklch(${l} 0.3 ${h}),`,
+      `oklch(${l} 0.4 ${h}))`,
+    ].join(" ");
+  }
+
+  get lightnessThumb(): string {
+    return `oklch(${this.lightness} ${this.chroma} ${this.hue})`;
+  }
+
+  get chromaThumb(): string {
+    return `oklch(${this.lightness} ${this.chroma} ${this.hue})`;
+  }
+
+  get lightnessDisplay(): string {
+    return this.lightness.toFixed(3);
+  }
+
+  get chromaDisplay(): string {
+    return this.chroma.toFixed(3);
   }
 
   get nameError(): string | null {
@@ -47,16 +91,12 @@ export default class CustomColourForm extends Component<Signature> {
     this.hue = hue;
   }
 
-  @action onHueSlider(e: Event): void {
-    this.hue = parseFloat((e.target as HTMLInputElement).value);
+  @action onLightnessChange(value: number): void {
+    this.lightness = value;
   }
 
-  @action onLightnessInput(e: Event): void {
-    this.lightness = parseFloat((e.target as HTMLInputElement).value);
-  }
-
-  @action onChromaInput(e: Event): void {
-    this.chroma = parseFloat((e.target as HTMLInputElement).value);
+  @action onChromaChange(value: number): void {
+    this.chroma = value;
   }
 
   @action onHexInput(e: Event): void {
@@ -105,7 +145,7 @@ export default class CustomColourForm extends Component<Signature> {
         <input
           class="{{styles.hexInput}} {{if this.hexError styles.error}}"
           type="text"
-          placeholder="#hex or rgb()"
+          placeholder="#hex"
           value={{this.hexInput}}
           {{on "input" this.onHexInput}}
         />
@@ -123,53 +163,30 @@ export default class CustomColourForm extends Component<Signature> {
           />
         </div>
 
-        {{! L, C, H sliders }}
+        {{! L and C gradient sliders }}
         <div class={{styles.slidersCol}}>
-          <div class={{styles.field}}>
-            <div class={{styles.fieldRow}}>
-              <span class={{styles.label}}>H</span>
-              <input
-                class={{styles.slider}}
-                type="range"
-                min="0"
-                max="360"
-                step="0.5"
-                value={{this.hue}}
-                {{on "input" this.onHueSlider}}
-              />
-              <span class={{styles.value}}>{{this.hue}}°</span>
-            </div>
-          </div>
-          <div class={{styles.field}}>
-            <div class={{styles.fieldRow}}>
-              <span class={{styles.label}}>L</span>
-              <input
-                class={{styles.slider}}
-                type="range"
-                min="0"
-                max="1"
-                step="0.001"
-                value={{this.lightness}}
-                {{on "input" this.onLightnessInput}}
-              />
-              <span class={{styles.value}}>{{this.lightness}}</span>
-            </div>
-          </div>
-          <div class={{styles.field}}>
-            <div class={{styles.fieldRow}}>
-              <span class={{styles.label}}>C</span>
-              <input
-                class={{styles.slider}}
-                type="range"
-                min="0"
-                max="0.4"
-                step="0.001"
-                value={{this.chroma}}
-                {{on "input" this.onChromaInput}}
-              />
-              <span class={{styles.value}}>{{this.chroma}}</span>
-            </div>
-          </div>
+          <GradientSlider
+            @label="Lightness"
+            @min={{0}}
+            @max={{1}}
+            @step={{0.001}}
+            @value={{this.lightness}}
+            @gradient={{this.lightnessGradient}}
+            @thumbColour={{this.lightnessThumb}}
+            @displayValue={{this.lightnessDisplay}}
+            @onChange={{this.onLightnessChange}}
+          />
+          <GradientSlider
+            @label="Chroma"
+            @min={{0}}
+            @max={{0.4}}
+            @step={{0.001}}
+            @value={{this.chroma}}
+            @gradient={{this.chromaGradient}}
+            @thumbColour={{this.chromaThumb}}
+            @displayValue={{this.chromaDisplay}}
+            @onChange={{this.onChromaChange}}
+          />
         </div>
       </div>
 

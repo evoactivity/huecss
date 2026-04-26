@@ -6,18 +6,16 @@ import type { ToneAnchor } from "#utils/interpolate";
 import type { ColourToken } from "#utils/token-generator";
 import type { Tone } from "#utils/colours";
 import { hexToOklch } from "#utils/colour-convert";
+import { or } from "#utils/helpers";
 import HueWheel from "#components/hue-wheel/hue-wheel";
+import GradientSlider from "#components/gradient-slider/gradient-slider";
 import styles from "./tone-picker.module.css";
-import { or } from "#app/utils/helpers.ts";
 
 interface Signature {
   Args: {
     tone: Tone;
-    /** Existing anchor at this tone, if any */
     anchor: ToneAnchor | undefined;
-    /** Current interpolated token at this tone */
     token: ColourToken | undefined;
-    /** True for tones 50, 500, 950 -- shows reset instead of remove */
     isEndpoint: boolean;
     onChange: (values: { l: number; c: number; h: number }) => void;
     onRemove: () => void;
@@ -29,7 +27,6 @@ export default class TonePicker extends Component<Signature> {
   @tracked hexInput = "";
   @tracked hexInvalid = false;
 
-  // Use anchor values if anchored, otherwise the interpolated token values
   get l(): number {
     return this.args.anchor?.l ?? this.args.token?.l ?? 0.5;
   }
@@ -52,23 +49,37 @@ export default class TonePicker extends Component<Signature> {
     return this.args.anchor !== undefined;
   }
 
+  get lightnessGradient(): string {
+    const { c, h } = this;
+    return `linear-gradient(to right in oklch, oklch(0 ${c} ${h}), oklch(0.25 ${c} ${h}), oklch(0.5 ${c} ${h}), oklch(0.75 ${c} ${h}), oklch(1 ${c} ${h}))`;
+  }
+
+  get chromaGradient(): string {
+    const { l, h } = this;
+    return `linear-gradient(to right in oklch, oklch(${l} 0 ${h}), oklch(${l} 0.1 ${h}), oklch(${l} 0.2 ${h}), oklch(${l} 0.3 ${h}), oklch(${l} 0.4 ${h}))`;
+  }
+
+  get thumbColour(): string {
+    return `oklch(${this.l} ${this.c} ${this.h})`;
+  }
+
+  get lDisplay(): string {
+    return this.l.toFixed(3);
+  }
+  get cDisplay(): string {
+    return this.c.toFixed(3);
+  }
+
   @action onHueChange(hue: number): void {
     this.args.onChange({ l: this.l, c: this.c, h: hue });
   }
 
-  @action onLightnessInput(e: Event): void {
-    const l = parseFloat((e.target as HTMLInputElement).value);
+  @action onLightnessChange(l: number): void {
     this.args.onChange({ l, c: this.c, h: this.h });
   }
 
-  @action onChromaInput(e: Event): void {
-    const c = parseFloat((e.target as HTMLInputElement).value);
+  @action onChromaChange(c: number): void {
     this.args.onChange({ l: this.l, c, h: this.h });
-  }
-
-  @action onHueSlider(e: Event): void {
-    const h = parseFloat((e.target as HTMLInputElement).value);
-    this.args.onChange({ l: this.l, c: this.c, h });
   }
 
   @action onHexInput(e: Event): void {
@@ -119,47 +130,30 @@ export default class TonePicker extends Component<Signature> {
           />
         </div>
 
-        {{! L / C / H sliders }}
+        {{! L and C gradient sliders }}
         <div class={{styles.slidersCol}}>
-          <div class={{styles.fieldRow}}>
-            <span class={{styles.label}}>H</span>
-            <input
-              class={{styles.slider}}
-              type="range"
-              min="0"
-              max="360"
-              step="0.5"
-              value={{this.h}}
-              {{on "input" this.onHueSlider}}
-            />
-            <span class={{styles.value}}>{{this.h}}°</span>
-          </div>
-          <div class={{styles.fieldRow}}>
-            <span class={{styles.label}}>L</span>
-            <input
-              class={{styles.slider}}
-              type="range"
-              min="0"
-              max="1"
-              step="0.001"
-              value={{this.l}}
-              {{on "input" this.onLightnessInput}}
-            />
-            <span class={{styles.value}}>{{this.l}}</span>
-          </div>
-          <div class={{styles.fieldRow}}>
-            <span class={{styles.label}}>C</span>
-            <input
-              class={{styles.slider}}
-              type="range"
-              min="0"
-              max="0.4"
-              step="0.001"
-              value={{this.c}}
-              {{on "input" this.onChromaInput}}
-            />
-            <span class={{styles.value}}>{{this.c}}</span>
-          </div>
+          <GradientSlider
+            @label="Lightness"
+            @min={{0}}
+            @max={{1}}
+            @step={{0.001}}
+            @value={{this.l}}
+            @gradient={{this.lightnessGradient}}
+            @thumbColour={{this.thumbColour}}
+            @displayValue={{this.lDisplay}}
+            @onChange={{this.onLightnessChange}}
+          />
+          <GradientSlider
+            @label="Chroma"
+            @min={{0}}
+            @max={{0.4}}
+            @step={{0.001}}
+            @value={{this.c}}
+            @gradient={{this.chromaGradient}}
+            @thumbColour={{this.thumbColour}}
+            @displayValue={{this.cDisplay}}
+            @onChange={{this.onChromaChange}}
+          />
         </div>
       </div>
 
