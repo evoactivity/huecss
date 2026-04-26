@@ -6,13 +6,10 @@
     <meta name="description" content="Generate oklch colour token ramps for your design system." />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="app/assets/app.css" />
+    <!-- VITE_EMBER_SSR_HEAD -->
   </head>
   <body>
-    <script type="module">
-      import Application from "#app/app";
-      import environment from "#config";
-
-      Application.create(environment.APP);
-    </script>
+    <!-- VITE_EMBER_SSR_BODY -->
+    <script type="module" src="/app/entry.ts"></script>
   </body>
 </html>

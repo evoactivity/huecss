@@ -4,6 +4,7 @@ import { babel } from "@rollup/plugin-babel";
 import { preview } from "@vitest/browser-preview";
 import { playwright } from "@vitest/browser-playwright";
 import { patchCssModules } from "vite-css-modules";
+import { emberSsg } from "vite-ember-ssr/vite-plugin";
 
 const isCI = process.env.CI === "true";
 
@@ -16,7 +17,7 @@ function removeCrossOrigin() {
   };
 }
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   base: "/",
   css: {
     modules: {
@@ -24,7 +25,7 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    include: ["ember-source > @ember/service/index.js"],
+    include: ["ember-source/@ember/service/index.js", "@embroider/router"],
   },
   test: {
     include: ["tests/**/*.test.{gjs,gts,ts}"],
@@ -45,6 +46,11 @@ export default defineConfig({
       babelHelpers: "runtime",
       extensions,
     }),
+    command === "build" &&
+      emberSsg({
+        routes: ["index"],
+        rehydrate: true,
+      }),
     removeCrossOrigin(),
   ],
-});
+}));
