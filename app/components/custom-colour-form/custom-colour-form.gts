@@ -2,8 +2,10 @@ import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
 import { on } from "@ember/modifier";
-import type { ColourDefinition } from "#utils/colours";
 import { not } from "#utils/helpers";
+import type { ColourDefinition } from "#utils/colours";
+import { hexToOklch } from "#utils/colour-convert";
+import HueWheel from "#components/hue-wheel/hue-wheel";
 import styles from "./custom-colour-form.module.css";
 
 interface Signature {
@@ -16,16 +18,20 @@ interface Signature {
 export default class CustomColourForm extends Component<Signature> {
   @tracked name = "";
   @tracked hue = 0;
+  @tracked lightness = 0.55;
+  @tracked chroma = 0.15;
+  @tracked hexInput = "";
+  @tracked hexError = false;
 
-  get previewStyle(): string {
-    return `background: oklch(0.577 0.15 ${this.hue})`;
+  get previewColour(): string {
+    return `oklch(${this.lightness} ${this.chroma} ${this.hue})`;
   }
 
   get nameError(): string | null {
     const trimmed = this.name.trim();
     if (!trimmed) return null;
     if (!/^[a-z][a-z0-9-]*$/.test(trimmed)) {
-      return "Only lowercase letters, numbers, and hyphens. Must start with a letter.";
+      return "Lowercase letters, numbers, hyphens. Must start with a letter.";
     }
     if (this.args.existingNames.includes(trimmed)) {
       return "A colour with this name already exists.";
@@ -37,66 +43,155 @@ export default class CustomColourForm extends Component<Signature> {
     return this.name.trim().length > 0 && this.nameError === null;
   }
 
-  @action handleNameInput(event: Event): void {
-    this.name = (event.target as HTMLInputElement).value;
+  @action onHueChange(hue: number): void {
+    this.hue = hue;
   }
 
-  @action handleHueInput(event: Event): void {
-    const raw = parseFloat((event.target as HTMLInputElement).value);
-    this.hue = isNaN(raw) ? 0 : Math.min(360, Math.max(0, raw));
+  @action onHueSlider(e: Event): void {
+    this.hue = parseFloat((e.target as HTMLInputElement).value);
   }
 
-  @action handleSubmit(event: Event): void {
-    event.preventDefault();
+  @action onLightnessInput(e: Event): void {
+    this.lightness = parseFloat((e.target as HTMLInputElement).value);
+  }
+
+  @action onChromaInput(e: Event): void {
+    this.chroma = parseFloat((e.target as HTMLInputElement).value);
+  }
+
+  @action onHexInput(e: Event): void {
+    const raw = (e.target as HTMLInputElement).value.trim();
+    this.hexInput = raw;
+    if (!raw) {
+      this.hexError = false;
+      return;
+    }
+    const oklch = hexToOklch(raw);
+    if (oklch) {
+      this.hue = Math.round(oklch.h * 10) / 10;
+      this.lightness = Math.round(oklch.l * 1000) / 1000;
+      this.chroma = Math.round(oklch.c * 1000) / 1000;
+      this.hexError = false;
+    } else {
+      this.hexError = true;
+    }
+  }
+
+  @action onNameInput(e: Event): void {
+    this.name = (e.target as HTMLInputElement).value;
+  }
+
+  @action handleSubmit(e: Event): void {
+    e.preventDefault();
     if (!this.canSubmit) return;
-
     this.args.onAdd({
       name: this.name.trim(),
       hue: this.hue,
-      lightness: 0.55,
-      chroma: 0.15,
+      lightness: this.lightness,
+      chroma: this.chroma,
     });
-
     this.name = "";
     this.hue = 0;
+    this.lightness = 0.55;
+    this.chroma = 0.15;
+    this.hexInput = "";
   }
 
   <template>
     <form class={{styles.form}} {{on "submit" this.handleSubmit}}>
-      <div class={{styles.field}}>
-        <label class={{styles.label}} for="custom-colour-name">Name</label>
+
+      {{! Hex paste }}
+      <div class={{styles.hexRow}}>
         <input
-          id="custom-colour-name"
-          class={{styles.input}}
+          class="{{styles.hexInput}} {{if this.hexError styles.error}}"
           type="text"
-          placeholder="e.g. brand"
-          value={{this.name}}
-          {{on "input" this.handleNameInput}}
+          placeholder="#hex or rgb()"
+          value={{this.hexInput}}
+          {{on "input" this.onHexInput}}
         />
-        {{#if this.nameError}}
-          <span class={{styles.error}}>{{this.nameError}}</span>
-        {{/if}}
+        <div class={{styles.hexSwatch}} style="background: {{this.previewColour}}"></div>
       </div>
 
-      <div class={{styles.field}}>
-        <label class={{styles.label}} for="custom-colour-hue">Hue (0-360)</label>
-        <input
-          id="custom-colour-hue"
-          class="{{styles.input}} {{styles.hueInput}}"
-          type="number"
-          min="0"
-          max="360"
-          step="1"
-          value={{this.hue}}
-          {{on "input" this.handleHueInput}}
-        />
+      <div class={{styles.row}}>
+        {{! Hue wheel }}
+        <div class={{styles.wheelCol}}>
+          <HueWheel
+            @hue={{this.hue}}
+            @lightness={{this.lightness}}
+            @chroma={{this.chroma}}
+            @onChange={{this.onHueChange}}
+          />
+        </div>
+
+        {{! L, C, H sliders }}
+        <div class={{styles.slidersCol}}>
+          <div class={{styles.field}}>
+            <div class={{styles.fieldRow}}>
+              <span class={{styles.label}}>H</span>
+              <input
+                class={{styles.slider}}
+                type="range"
+                min="0"
+                max="360"
+                step="0.5"
+                value={{this.hue}}
+                {{on "input" this.onHueSlider}}
+              />
+              <span class={{styles.value}}>{{this.hue}}°</span>
+            </div>
+          </div>
+          <div class={{styles.field}}>
+            <div class={{styles.fieldRow}}>
+              <span class={{styles.label}}>L</span>
+              <input
+                class={{styles.slider}}
+                type="range"
+                min="0"
+                max="1"
+                step="0.001"
+                value={{this.lightness}}
+                {{on "input" this.onLightnessInput}}
+              />
+              <span class={{styles.value}}>{{this.lightness}}</span>
+            </div>
+          </div>
+          <div class={{styles.field}}>
+            <div class={{styles.fieldRow}}>
+              <span class={{styles.label}}>C</span>
+              <input
+                class={{styles.slider}}
+                type="range"
+                min="0"
+                max="0.4"
+                step="0.001"
+                value={{this.chroma}}
+                {{on "input" this.onChromaInput}}
+              />
+              <span class={{styles.value}}>{{this.chroma}}</span>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div class={{styles.preview}} style={{this.previewStyle}}></div>
-
-      <button type="submit" class={{styles.addButton}} disabled={{not this.canSubmit}}>
-        Add colour
-      </button>
+      {{! Name and add }}
+      <div class={{styles.nameRow}}>
+        <div class={{styles.field}} style="flex: 1">
+          <input
+            id="custom-colour-name"
+            class={{styles.nameInput}}
+            type="text"
+            placeholder="Colour name (e.g. brand)"
+            value={{this.name}}
+            {{on "input" this.onNameInput}}
+          />
+          {{#if this.nameError}}
+            <span class={{styles.error}}>{{this.nameError}}</span>
+          {{/if}}
+        </div>
+        <button type="submit" class={{styles.addButton}} disabled={{not this.canSubmit}}>
+          Add colour
+        </button>
+      </div>
     </form>
   </template>
 }

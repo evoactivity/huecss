@@ -5,7 +5,7 @@ import { array } from "@ember/helper";
 import CustomColourForm from "#components/custom-colour-form/custom-colour-form";
 
 describe("CustomColourForm", () => {
-  test("renders name and hue inputs", async () => {
+  test("renders name input and add button", async () => {
     await using ctx = await setupRenderingContext();
     const onAdd = vi.fn();
 
@@ -14,7 +14,7 @@ describe("CustomColourForm", () => {
     );
 
     expect(ctx.element.querySelector("#custom-colour-name")).toBeTruthy();
-    expect(ctx.element.querySelector("#custom-colour-hue")).toBeTruthy();
+    expect(ctx.element.querySelector("button[type='submit']")).toBeTruthy();
   });
 
   test("submit button is disabled when name is empty", async () => {
@@ -42,7 +42,7 @@ describe("CustomColourForm", () => {
     expect(ctx.element.textContent).toContain("already exists");
   });
 
-  test("calls onAdd with correct definition on valid submit", async () => {
+  test("calls onAdd with name, hue, lightness and chroma on valid submit", async () => {
     await using ctx = await setupRenderingContext();
     const onAdd = vi.fn();
 
@@ -51,11 +51,15 @@ describe("CustomColourForm", () => {
     );
 
     await fillIn("#custom-colour-name", "brand");
-    await fillIn("#custom-colour-hue", "200");
     await click("button[type='submit']");
 
     expect(onAdd).toHaveBeenCalledOnce();
-    const call = onAdd.mock.calls[0] as [{ name: string; hue: number }];
-    expect(call[0]).toMatchObject({ name: "brand", hue: 200 });
+    const call = onAdd.mock.calls[0] as [
+      { name: string; hue: number; lightness: number; chroma: number },
+    ];
+    expect(call[0]).toMatchObject({ name: "brand" });
+    expect(typeof call[0].hue).toBe("number");
+    expect(typeof call[0].lightness).toBe("number");
+    expect(typeof call[0].chroma).toBe("number");
   });
 });

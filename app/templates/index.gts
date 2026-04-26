@@ -3,20 +3,17 @@ import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
 import { DEFAULT_COLOURS } from "#utils/colours";
 import type { ColourDefinition } from "#utils/colours";
-import type { ActiveColour, CurveOverride, GlobalCurves } from "#utils/token-generator";
+import type { ActiveColour, CurveOverride } from "#utils/token-generator";
 import { generateTokens, DEFAULT_GLOBAL_CURVES } from "#utils/token-generator";
 import { generateCss } from "#utils/css-output";
-import type { BezierCurve } from "#utils/spline";
 import ColourPicker from "#components/colour-picker/colour-picker";
 import CustomColourForm from "#components/custom-colour-form/custom-colour-form";
-import SplineEditor from "#components/spline-editor/spline-editor";
 import ToneSwatches from "#components/tone-swatches/tone-swatches";
 import CssOutput from "#components/css-output/css-output";
 
 export default class IndexRoute extends Component {
   @tracked activeColours: ActiveColour[] = [];
   @tracked customColours: ColourDefinition[] = [];
-  @tracked globalCurves: GlobalCurves = DEFAULT_GLOBAL_CURVES;
 
   get allColours(): ColourDefinition[] {
     return [...DEFAULT_COLOURS, ...this.customColours];
@@ -27,7 +24,8 @@ export default class IndexRoute extends Component {
   }
 
   get tokens() {
-    return generateTokens(this.activeColours, this.globalCurves);
+    // Global curves are the fallback for custom colours (which have no fitted curves)
+    return generateTokens(this.activeColours, DEFAULT_GLOBAL_CURVES);
   }
 
   get css(): string {
@@ -58,14 +56,6 @@ export default class IndexRoute extends Component {
     );
   }
 
-  @action setGlobalLightness(curve: BezierCurve): void {
-    this.globalCurves = { ...this.globalCurves, lightness: curve };
-  }
-
-  @action setGlobalChroma(curve: BezierCurve): void {
-    this.globalCurves = { ...this.globalCurves, chroma: curve };
-  }
-
   <template>
     <main>
       <header>
@@ -86,22 +76,6 @@ export default class IndexRoute extends Component {
           <summary>Add a custom colour</summary>
           <CustomColourForm @existingNames={{this.existingNames}} @onAdd={{this.addCustomColour}} />
         </details>
-      </section>
-
-      <section aria-labelledby="curves-heading">
-        <h2 id="curves-heading">Global curves</h2>
-        <SplineEditor
-          @label="Lightness"
-          @curve={{this.globalCurves.lightness}}
-          @tokens={{this.tokens}}
-          @onChange={{this.setGlobalLightness}}
-        />
-        <SplineEditor
-          @label="Chroma"
-          @curve={{this.globalCurves.chroma}}
-          @tokens={{this.tokens}}
-          @onChange={{this.setGlobalChroma}}
-        />
       </section>
 
       {{#if this.hasActiveColours}}

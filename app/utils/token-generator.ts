@@ -65,8 +65,10 @@ export function generateTokens(
 
   for (const active of activeColours) {
     const { definition, curveOverride } = active;
-    const lightnessCurve = curveOverride?.lightness ?? globalCurves.lightness;
-    const chromaCurve = curveOverride?.chroma ?? globalCurves.chroma;
+    // Priority: user per-colour override → colour's own fitted curve → global default
+    const lightnessCurve =
+      curveOverride?.lightness ?? definition.lightnessCurve ?? globalCurves.lightness;
+    const chromaCurve = curveOverride?.chroma ?? definition.chromaCurve ?? globalCurves.chroma;
 
     // Evaluate curves at tone 500 to use as the normalisation anchor
     const lAnchor = evaluateBezier(lightnessCurve, X_500);

@@ -4,8 +4,43 @@ import { TONES } from "#utils/colours";
 import type { ActiveColour, ColourToken } from "#utils/token-generator";
 import type { BezierCurve } from "#utils/spline";
 
+// Blue without fitted curves -- uses global default
 const blue: ActiveColour = {
   definition: { name: "blue", lightness: 0.546, hue: 264.052, chroma: 0.232 },
+};
+
+// Blue with its own fitted curves -- simulates a DEFAULT_COLOURS entry
+const blueWithCurves: ActiveColour = {
+  definition: {
+    name: "blue",
+    lightness: 0.546,
+    hue: 264.052,
+    chroma: 0.232,
+    lightnessCurve: {
+      p0y: 0.7738,
+      cp0x: 0.2219,
+      cp0y: 0.7056,
+      cpa0x: 0.3408,
+      cpa0y: 0.5958,
+      cpa1x: 0.6881,
+      cpa1y: 0.3638,
+      cp1x: 1,
+      cp1y: 0.335,
+      p1y: 0.2275,
+    },
+    chromaCurve: {
+      p0y: 0.0387,
+      cp0x: 0.2706,
+      cp0y: 0.1585,
+      cpa0x: 0.3382,
+      cpa0y: 0.3623,
+      cpa1x: 0.6736,
+      cpa1y: 0.7458,
+      cp1x: 0.9733,
+      cp1y: 0.3528,
+      p1y: 0.2134,
+    },
+  },
 };
 
 describe("generateTokens", () => {
@@ -109,5 +144,41 @@ describe("generateTokens", () => {
 
   test("returns empty array for no active colours", () => {
     expect(generateTokens([])).toEqual([]);
+  });
+
+  test("colour-own curves take priority over global defaults", () => {
+    const tokensGlobal = generateTokens([blue]);
+    const tokensOwn = generateTokens([blueWithCurves]);
+    // tone 500 should always be the same (ground truth)
+    const t500Global = tokensGlobal.find((t) => t.tone === 500)!;
+    const t500Own = tokensOwn.find((t) => t.tone === 500)!;
+    expect(t500Global.l).toBeCloseTo(t500Own.l, 3);
+    // but other tones will differ since the curves differ
+    const t50Global = tokensGlobal.find((t) => t.tone === 50)!;
+    const t50Own = tokensOwn.find((t) => t.tone === 50)!;
+    expect(t50Global.l).not.toBeCloseTo(t50Own.l, 1);
+  });
+
+  test("per-colour user override still takes priority over colour-own curves", () => {
+    const flatLightness: BezierCurve = {
+      p0y: 0.5,
+      cp0x: 0.1,
+      cp0y: 0.5,
+      cpa0x: 0.4,
+      cpa0y: 0.5,
+      cpa1x: 0.6,
+      cpa1y: 0.5,
+      cp1x: 0.9,
+      cp1y: 0.5,
+      p1y: 0.5,
+    };
+    const withOverride: ActiveColour = {
+      ...blueWithCurves,
+      curveOverride: { lightness: flatLightness },
+    };
+    const tokens = generateTokens([withOverride]);
+    for (const token of tokens) {
+      expect(token.l).toBeCloseTo(blueWithCurves.definition.lightness, 3);
+    }
   });
 });

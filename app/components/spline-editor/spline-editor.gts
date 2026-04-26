@@ -36,6 +36,8 @@ interface Signature {
   Args: {
     label: string;
     curve?: BezierCurve;
+    /** Fallback curve when @curve is absent. Defaults to DEFAULT_LIGHTNESS_CURVE. */
+    defaultCurve?: BezierCurve;
     onChange: (curve: BezierCurve) => void;
     tokens?: ColourToken[];
   };
@@ -48,7 +50,7 @@ export default class SplineEditor extends Component<Signature> {
   private svgEl: SVGSVGElement | null = null;
 
   get curve(): BezierCurve {
-    return this.args.curve ?? DEFAULT_LIGHTNESS_CURVE;
+    return this.args.curve ?? this.args.defaultCurve ?? DEFAULT_LIGHTNESS_CURVE;
   }
 
   get curvePath(): string {
@@ -109,6 +111,17 @@ export default class SplineEditor extends Component<Signature> {
   }
   get anchorSvgY(): number {
     return this.svgY(ANCHOR_Y);
+  }
+
+  // Fill colour for p0 (tone 50) and p1 (tone 950) endpoints, taken from tokens when available
+  get p0Fill(): string {
+    const token = this.args.tokens?.find((t) => t.tone === 50);
+    return token ? `oklch(${token.l} ${token.c} ${token.h})` : "oklch(1 0 0)";
+  }
+
+  get p1Fill(): string {
+    const token = this.args.tokens?.find((t) => t.tone === 950);
+    return token ? `oklch(${token.l} ${token.c} ${token.h})` : "oklch(0.15 0 0)";
   }
 
   get gridLines(): Array<{ d: string; axis: boolean }> {
@@ -375,13 +388,14 @@ export default class SplineEditor extends Component<Signature> {
           {{on "pointerdown" this.onPointerDown}}
         />
 
-        {{! Endpoint points (y-only drag) }}
+        {{! Endpoint points (y-only drag) -- filled with the tone colour when tokens are available }}
         <circle
           id="p0"
           class={{styles.point}}
           cx={{this.p0x}}
           cy={{this.p0y}}
           r={{POINT_R}}
+          style="fill: {{this.p0Fill}}"
           {{on "pointerdown" this.onPointerDown}}
         />
         <circle
@@ -390,6 +404,7 @@ export default class SplineEditor extends Component<Signature> {
           cx={{this.p1x}}
           cy={{this.p1y}}
           r={{POINT_R}}
+          style="fill: {{this.p1Fill}}"
           {{on "pointerdown" this.onPointerDown}}
         />
       </svg>

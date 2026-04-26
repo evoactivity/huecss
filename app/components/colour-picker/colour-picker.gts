@@ -5,7 +5,7 @@ import { on } from "@ember/modifier";
 import { fn } from "@ember/helper";
 import type { ColourDefinition } from "#utils/colours";
 import type { CurveOverride, ActiveColour, ColourToken } from "#utils/token-generator";
-import type { BezierCurve } from "#utils/spline";
+import { DEFAULT_CHROMA_CURVE, DEFAULT_LIGHTNESS_CURVE, type BezierCurve } from "#utils/spline";
 import { eq } from "#utils/helpers";
 import SplineEditor from "#components/spline-editor/spline-editor";
 import styles from "./colour-picker.module.css";
@@ -35,12 +35,19 @@ export default class ColourPicker extends Component<Signature> {
     return this.args.tokens.filter((t) => t.name === name);
   };
 
-  getOverrideLightness = (name: string): BezierCurve | undefined => {
-    return this.getOverride(name)?.lightness;
+  getDefinition = (name: string): ColourDefinition | undefined => {
+    return this.args.colours.find((c) => c.name === name);
   };
 
-  getOverrideChroma = (name: string): BezierCurve | undefined => {
-    return this.getOverride(name)?.chroma;
+  // Returns the user override if present, otherwise the colour's own fitted curve.
+  // SplineEditor treats undefined as "use the global default", so we must always
+  // provide the colour-specific curve when available.
+  getLightnessCurve = (name: string): BezierCurve | undefined => {
+    return this.getOverride(name)?.lightness ?? this.getDefinition(name)?.lightnessCurve;
+  };
+
+  getChromaCurve = (name: string): BezierCurve | undefined => {
+    return this.getOverride(name)?.chroma ?? this.getDefinition(name)?.chromaCurve;
   };
 
   swatchStyle = (colour: ColourDefinition): string => {
@@ -102,13 +109,15 @@ export default class ColourPicker extends Component<Signature> {
               </div>
               <SplineEditor
                 @label="Lightness"
-                @curve={{(this.getOverrideLightness colour.name)}}
+                @curve={{(this.getLightnessCurve colour.name)}}
+                @defaultCurve={{DEFAULT_LIGHTNESS_CURVE}}
                 @tokens={{(this.tokensFor colour.name)}}
                 @onChange={{(fn this.handleLightnessChange colour.name)}}
               />
               <SplineEditor
                 @label="Chroma"
-                @curve={{(this.getOverrideChroma colour.name)}}
+                @curve={{(this.getChromaCurve colour.name)}}
+                @defaultCurve={{DEFAULT_CHROMA_CURVE}}
                 @tokens={{(this.tokensFor colour.name)}}
                 @onChange={{(fn this.handleChromaChange colour.name)}}
               />
