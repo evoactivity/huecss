@@ -1,8 +1,28 @@
 .form {
   display: flex;
-  align-items: flex-end;
-  gap: 0.75rem;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem 0;
+}
+
+.row {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
   flex-wrap: wrap;
+}
+
+.wheelCol {
+  flex: 0 0 auto;
+  width: 200px;
+}
+
+.slidersCol {
+  flex: 1;
+  min-width: 160px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
 .field {
@@ -11,29 +31,71 @@
   gap: 0.25rem;
 }
 
+.fieldRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .label {
   font-size: 0.75rem;
   font-weight: 500;
+  color: oklch(0.4 0 0);
+  min-width: 1.5rem;
 }
 
-.input {
+.slider {
+  flex: 1;
+  accent-color: oklch(0.5 0.15 264);
+}
+
+.value {
+  font-size: 0.75rem;
+  color: oklch(0.5 0 0);
+  min-width: 2.5rem;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.hexRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.hexInput {
+  font-family: monospace;
+  font-size: 0.875rem;
+  padding: 0.375rem 0.5rem;
+  border: 1px solid oklch(0.75 0 0);
+  border-radius: 0.375rem;
+  width: 9rem;
+}
+
+.hexInput.error {
+  border-color: oklch(0.6 0.2 27);
+}
+
+.hexSwatch {
+  width: 28px;
+  height: 28px;
+  border-radius: 0.25rem;
+  border: 1px solid oklch(0.85 0 0);
+  flex-shrink: 0;
+}
+
+.nameRow {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-end;
+}
+
+.nameInput {
+  flex: 1;
   padding: 0.375rem 0.5rem;
   border: 1px solid oklch(0.75 0 0);
   border-radius: 0.375rem;
   font-size: 0.875rem;
-  width: 10rem;
-}
-
-.hueInput {
-  width: 5rem;
-}
-
-.preview {
-  width: 36px;
-  height: 36px;
-  border-radius: 0.375rem;
-  flex-shrink: 0;
-  align-self: flex-end;
 }
 
 .addButton {
@@ -44,7 +106,7 @@
   border-radius: 0.375rem;
   font-size: 0.875rem;
   cursor: pointer;
-  align-self: flex-end;
+  white-space: nowrap;
 }
 
 .addButton:hover {
@@ -57,6 +119,6 @@
 }
 
 .error {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: oklch(0.5 0.2 27);
 }
