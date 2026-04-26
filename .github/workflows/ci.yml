@@ -32,6 +32,4 @@ jobs:
         with:
           node-version: "25.9.0"
           pnpm-version: "10.33.2"
-      - name: Install Playwright Chromium
-        run: ./node_modules/.bin/playwright install --with-deps chromium
       - run: pnpm test:ci
