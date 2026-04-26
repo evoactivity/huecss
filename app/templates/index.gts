@@ -11,10 +11,7 @@ export default class IndexRoute extends Component {
   @service declare colourStudio: ColourStudio;
 
   <template>
-    <AppHeader
-      @interpolationMode={{this.colourStudio.interpolationMode}}
-      @onModeChange={{this.colourStudio.setInterpolationMode}}
-    />
+    <AppHeader />
 
     <div class="app-body">
       {{! Left panel }}

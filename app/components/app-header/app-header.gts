@@ -1,21 +1,13 @@
 import Component from "@glimmer/component";
+import { service } from "@ember/service";
 import { on } from "@ember/modifier";
 import { fn } from "@ember/helper";
-import type { InterpolationMode } from "#utils/interpolate";
 import { INTERPOLATION_MODES } from "#utils/interpolate";
 import { eq } from "#utils/helpers";
+import type ColourStudio from "#services/colour-studio";
 
-interface Signature {
-  Args: {
-    interpolationMode: InterpolationMode;
-    onModeChange: (mode: InterpolationMode) => void;
-  };
-}
-
-export default class AppHeader extends Component<Signature> {
-  onTabClick = (mode: InterpolationMode): void => {
-    this.args.onModeChange(mode);
-  };
+export default class AppHeader extends Component {
+  @service("colour-studio") declare studio: ColourStudio;
 
   <template>
     <header class="app-header">
@@ -26,9 +18,10 @@ export default class AppHeader extends Component<Signature> {
           <button
             type="button"
             role="tab"
-            aria-selected={{eq mode @interpolationMode}}
-            class="app-header__tab {{if (eq mode @interpolationMode) 'app-header__tab--active'}}"
-            {{on "click" (fn this.onTabClick mode)}}
+            aria-selected={{eq mode this.studio.interpolationMode}}
+            class="app-header__tab
+              {{if (eq mode this.studio.interpolationMode) 'app-header__tab--active'}}"
+            {{on "click" (fn this.studio.setInterpolationMode mode)}}
           >
             {{mode}}
           </button>
