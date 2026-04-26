@@ -16,6 +16,9 @@ importers:
       "@glimmer/component":
         specifier: 2.1.1
         version: 2.1.1
+      chroma-js:
+        specifier: ^3.2.0
+        version: 3.2.0
       decorator-transforms:
         specifier: 2.3.1
         version: 2.3.1(@babel/core@7.29.0)
@@ -71,6 +74,9 @@ importers:
       "@rollup/plugin-babel":
         specifier: 6.1.0
         version: 6.1.0(@babel/core@7.29.0)(rollup@4.60.2)
+      "@types/chroma-js":
+        specifier: ^3.1.2
+        version: 3.1.2
       "@vitest/browser":
         specifier: ^4.1.5
         version: 4.1.5(vite@7.3.2(@types/node@25.6.0)(jiti@2.6.1)(terser@5.46.2))(vitest@4.1.5)
@@ -2006,6 +2012,12 @@ packages:
         integrity: sha512-Mw558oeA9fFbv65/y4mHtXDs9bPnFMZAL/jxdPFUpOHHIXX91mcgEHbS5Lahr+pwZFR8A7GQleRWeI6cGFC2UA==,
       }
 
+  "@types/chroma-js@3.1.2":
+    resolution:
+      {
+        integrity: sha512-YBTQqArPN8A0niHXCwrO1z5x++a+6l0mLBykncUpr23oIPW7L4h39s6gokdK/bDrPmSh8+TjMmrhBPnyiaWPmQ==,
+      }
+
   "@types/cors@2.8.19":
     resolution:
       {
@@ -2888,6 +2900,12 @@ packages:
     resolution:
       {
         integrity: sha512-wqW3VdPnlSWT4eRiYX+hcs+C6ViBPUWk1qTCd+37qw9kEm/a5n2qcyQDMBWvSYKN/ctqZzeXNQaeBjOetJJUkw==,
+      }
+
+  chroma-js@3.2.0:
+    resolution:
+      {
+        integrity: sha512-os/OippSlX1RlWWr+QDPcGUZs0uoqr32urfxESG9U93lhUfbnlyckte84Q8P1UQY/qth983AS1JONKmLS4T0nw==,
       }
 
   clean-up-path@1.0.0:
@@ -8480,6 +8498,8 @@ snapshots:
       "@types/deep-eql": 4.0.2
       assertion-error: 2.0.1
 
+  "@types/chroma-js@3.1.2": {}
+
   "@types/cors@2.8.19":
     dependencies:
       "@types/node": 25.6.0
@@ -9142,6 +9162,8 @@ snapshots:
   charm@1.0.2:
     dependencies:
       inherits: 2.0.4
+
+  chroma-js@3.2.0: {}
 
   clean-up-path@1.0.0: {}
 

@@ -1,12 +1,10 @@
-import type { ColourDefinition, Tone } from "#utils/colours";
-import { TONES } from "#utils/colours";
-import {
-  evaluateBezier,
-  toneToX,
-  DEFAULT_LIGHTNESS_CURVE,
-  DEFAULT_CHROMA_CURVE,
-} from "#utils/spline";
+import type { ColourDefinition } from "#utils/colours";
 import type { BezierCurve } from "#utils/spline";
+import { interpolateRamp, seedAnchors } from "#utils/interpolate";
+import type { ToneAnchor, InterpolationMode } from "#utils/interpolate";
+import { DEFAULT_LIGHTNESS_CURVE, DEFAULT_CHROMA_CURVE } from "#utils/spline";
+
+export type { ToneAnchor, InterpolationMode };
 
 export interface CurveOverride {
   lightness?: BezierCurve;
@@ -15,20 +13,19 @@ export interface CurveOverride {
 
 export interface ActiveColour {
   definition: ColourDefinition;
-  /** Optional per-colour curve overrides; falls back to global curves when absent */
+  /** Always present -- seeded on activation from bezier curves */
+  anchors: ToneAnchor[];
+  /** Colour space used for chroma.js interpolation */
+  interpolationMode: InterpolationMode;
+  /** Optional bezier overrides that shape the seeded tone 50/950 anchors */
   curveOverride?: CurveOverride;
 }
 
 export interface ColourToken {
-  /** e.g. "blue" */
   name: string;
-  /** e.g. 500 */
-  tone: Tone;
-  /** CSS variable name, e.g. "--color-blue-500" */
+  tone: import("#utils/colours").Tone;
   variable: string;
-  /** oklch value string, e.g. "0.577 0.232 264.052" */
   value: string;
-  /** Raw oklch channels for rendering swatches */
   l: number;
   c: number;
   h: number;
@@ -44,73 +41,48 @@ export const DEFAULT_GLOBAL_CURVES: GlobalCurves = {
   chroma: DEFAULT_CHROMA_CURVE,
 };
 
-// x position of tone 500 -- the anchor point
-const X_500 = toneToX(500);
+export const DEFAULT_INTERPOLATION_MODE: InterpolationMode = "oklch";
+
+/**
+ * Derive the effective bezier curves for a colour:
+ * user override → colour's own fitted curves → global defaults
+ */
+export function effectiveCurves(
+  active: ActiveColour,
+  globalCurves: GlobalCurves = DEFAULT_GLOBAL_CURVES,
+): { lightness: BezierCurve; chroma: BezierCurve } {
+  return {
+    lightness:
+      active.curveOverride?.lightness ?? active.definition.lightnessCurve ?? globalCurves.lightness,
+    chroma: active.curveOverride?.chroma ?? active.definition.chromaCurve ?? globalCurves.chroma,
+  };
+}
+
+/**
+ * Seed a fresh ActiveColour from a definition.
+ * Always called when a colour is first activated.
+ */
+export function activateColour(
+  definition: ColourDefinition,
+  globalCurves: GlobalCurves = DEFAULT_GLOBAL_CURVES,
+  interpolationMode: InterpolationMode = DEFAULT_INTERPOLATION_MODE,
+): ActiveColour {
+  const lightnessCurve = definition.lightnessCurve ?? globalCurves.lightness;
+  const chromaCurve = definition.chromaCurve ?? globalCurves.chroma;
+
+  return {
+    definition,
+    anchors: seedAnchors(definition, lightnessCurve, chromaCurve),
+    interpolationMode,
+  };
+}
 
 /**
  * Generate all colour tokens for the given active colours.
- *
- * Tone 500 is the ground truth: it always renders exactly the definition's
- * lightness and chroma. The curves are used as a relative ramp -- each curve
- * value is divided by the curve's value at x=0.5 (tone 500) to produce a
- * normalised multiplier, which is then applied to the 500-tone anchor value.
- *
- * This means editing the curve shape never shifts tone 500.
+ * Always uses chroma.js interpolation through the colour's anchors.
  */
-export function generateTokens(
-  activeColours: ActiveColour[],
-  globalCurves: GlobalCurves = DEFAULT_GLOBAL_CURVES,
-): ColourToken[] {
-  const tokens: ColourToken[] = [];
-
-  for (const active of activeColours) {
-    const { definition, curveOverride } = active;
-    // Priority: user per-colour override → colour's own fitted curve → global default
-    const lightnessCurve =
-      curveOverride?.lightness ?? definition.lightnessCurve ?? globalCurves.lightness;
-    const chromaCurve = curveOverride?.chroma ?? definition.chromaCurve ?? globalCurves.chroma;
-
-    // Evaluate curves at tone 500 to use as the normalisation anchor
-    const lAnchor = evaluateBezier(lightnessCurve, X_500);
-    const cAnchor = evaluateBezier(chromaCurve, X_500);
-
-    for (const tone of TONES) {
-      const x = toneToX(tone);
-
-      // Normalise: scale curve output so the 500 tone always equals the definition value
-      const lRaw =
-        lAnchor > 0
-          ? (evaluateBezier(lightnessCurve, x) / lAnchor) * definition.lightness
-          : definition.lightness;
-      const cRaw =
-        cAnchor > 0
-          ? (evaluateBezier(chromaCurve, x) / cAnchor) * definition.chroma
-          : definition.chroma;
-
-      const l = round(clamp(lRaw, 0, 1), 4);
-      const c = round(Math.max(0, cRaw), 4);
-      const h = round(definition.hue, 3);
-
-      tokens.push({
-        name: definition.name,
-        tone,
-        variable: `--color-${definition.name}-${tone}`,
-        value: `${l} ${c} ${h}`,
-        l,
-        c,
-        h,
-      });
-    }
-  }
-
-  return tokens;
-}
-
-function clamp(value: number, min: number, max: number): number {
-  return Math.min(max, Math.max(min, value));
-}
-
-function round(value: number, decimals: number): number {
-  const factor = Math.pow(10, decimals);
-  return Math.round(value * factor) / factor;
+export function generateTokens(activeColours: ActiveColour[]): ColourToken[] {
+  return activeColours.flatMap((active) =>
+    interpolateRamp(active.anchors, active.definition, active.interpolationMode),
+  );
 }

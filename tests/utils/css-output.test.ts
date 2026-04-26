@@ -1,11 +1,8 @@
 import { describe, test, expect } from "vitest";
 import { generateCss } from "#utils/css-output";
-import { generateTokens } from "#utils/token-generator";
-import type { ActiveColour } from "#utils/token-generator";
+import { generateTokens, activateColour } from "#utils/token-generator";
 
-const blue: ActiveColour = {
-  definition: { name: "blue", lightness: 0.546, hue: 264.052, chroma: 0.232 },
-};
+const blue = activateColour({ name: "blue", lightness: 0.546, hue: 264.052, chroma: 0.232 });
 
 describe("generateCss", () => {
   test("returns a :root block for empty tokens", () => {
@@ -32,13 +29,10 @@ describe("generateCss", () => {
   });
 
   test("separates multiple colour groups with a blank line", () => {
-    const red: ActiveColour = {
-      definition: { name: "red", lightness: 0.577, hue: 27.325, chroma: 0.2 },
-    };
+    const red = activateColour({ name: "red", lightness: 0.577, hue: 27.325, chroma: 0.2 });
     const css = generateCss(generateTokens([blue, red]));
     expect(css).toContain("/* blue */");
     expect(css).toContain("/* red */");
-    // Blank line between groups
     expect(css).toMatch(/;\n\n\s+\/\*/);
   });
 
