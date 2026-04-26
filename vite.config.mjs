@@ -3,6 +3,7 @@ import { extensions, ember } from "@embroider/vite";
 import { babel } from "@rollup/plugin-babel";
 import { preview } from "@vitest/browser-preview";
 import { playwright } from "@vitest/browser-playwright";
+import { patchCssModules } from "vite-css-modules";
 
 const isCI = process.env.CI === "true";
 
@@ -17,6 +18,11 @@ function removeCrossOrigin() {
 
 export default defineConfig({
   base: "/",
+  css: {
+    modules: {
+      localsConvention: "camelCaseOnly",
+    },
+  },
   test: {
     include: ["tests/**/*.test.{gjs,gts,ts}"],
     maxConcurrency: 1,
@@ -28,6 +34,9 @@ export default defineConfig({
     },
   },
   plugins: [
+    patchCssModules({
+      generateSourceTypes: true,
+    }),
     ember(),
     babel({
       babelHelpers: "runtime",
