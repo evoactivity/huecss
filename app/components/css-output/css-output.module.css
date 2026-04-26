@@ -1,0 +1,46 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: oklch(0.4 0 0);
+}
+
+.copyButton {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.625rem;
+  border: 1px solid oklch(0.75 0 0);
+  border-radius: 0.25rem;
+  background: none;
+  cursor: pointer;
+}
+
+.copyButton:hover {
+  background: oklch(0.95 0 0);
+}
+
+.codeBlock {
+  overflow: auto;
+  max-height: 480px;
+  border-radius: 0.5rem;
+  font-size: 0.8rem;
+  line-height: 1.6;
+}
+
+/* Shiki injects a <pre> with inline background; we just ensure it fills the container */
+.codeBlock :global(pre) {
+  margin: 0;
+  padding: 1rem;
+  min-height: 100%;
+  border-radius: 0.5rem;
+}

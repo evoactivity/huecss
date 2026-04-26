@@ -30,7 +30,7 @@
     "format": "prettier --write .",
     "lint:prettier": "prettier --check .",
     "test": "vitest",
-    "test:ci": "vitest run",
+    "test:ci": "CI=true vitest run",
     "lint:types": "ember-tsc --noEmit"
   },
   "dependencies": {
@@ -38,8 +38,10 @@
     "@embroider/router": "3.0.6",
     "@glimmer/component": "2.1.1",
     "decorator-transforms": "2.3.1",
+    "ember-modifier": "^4.3.0",
     "ember-source": "6.10.1",
-    "ember-strict-application-resolver": "0.1.1"
+    "ember-strict-application-resolver": "0.1.1",
+    "shiki": "^4.0.2"
   },
   "devDependencies": {
     "@babel/core": "7.29.0",

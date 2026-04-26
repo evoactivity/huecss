@@ -60,6 +60,7 @@ Prettier with `prettier-plugin-ember-template-tag` (handles `.gts`/`.gjs` files)
 - Vitest runs in-browser via `@vitest/browser-preview` locally and `@vitest/browser-playwright` in CI (headless). No build step needed before running tests.
 - The provider switches automatically: `CI=true` in the environment selects Playwright (headless); otherwise preview provider is used.
 - `maxConcurrency: 1` is set in `vite.config.mjs`; tests run serially.
+- use `pnpm test:ci` to run tests whilst developing
 
 ### Running a single test
 
