@@ -16,3 +16,6 @@
 
 # ember-try
 /.node_modules.ember-try/
+
+*.module.css.d.ts
+pnpm-lock.yaml
