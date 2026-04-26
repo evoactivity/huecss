@@ -1,5 +1,4 @@
 import Service from "@ember/service";
-import { action } from "@ember/object";
 import { tracked } from "@glimmer/tracking";
 import { trackedArray } from "@ember/reactive/collections";
 import { DEFAULT_COLOURS } from "#utils/colours";
@@ -39,11 +38,11 @@ export default class ColourStudio extends Service {
     return this.activeColours.length > 0;
   }
 
-  @action tokensFor(name: string): ColourToken[] {
+  tokensFor = (name: string): ColourToken[] => {
     return this.tokens.filter((t) => t.name === name);
-  }
+  };
 
-  @action toggleColour(colour: ColourDefinition): void {
+  toggleColour = (colour: ColourDefinition): void => {
     const idx = this.activeColours.findIndex((a) => a.definition.name === colour.name);
     if (idx !== -1) {
       this.activeColours.splice(idx, 1);
@@ -52,24 +51,24 @@ export default class ColourStudio extends Service {
         activateColour(colour, DEFAULT_GLOBAL_CURVES, this.interpolationMode),
       );
     }
-  }
+  };
 
-  @action addCustomColour(colour: ColourDefinition): void {
+  addCustomColour = (colour: ColourDefinition): void => {
     this.customColours.push(colour);
     this.activeColours.push(activateColour(colour, DEFAULT_GLOBAL_CURVES, this.interpolationMode));
-  }
+  };
 
-  @action setInterpolationMode(mode: InterpolationMode): void {
+  setInterpolationMode = (mode: InterpolationMode): void => {
     this.interpolationMode = mode;
     for (const active of this.activeColours) {
       active.interpolationMode = mode;
     }
-  }
+  };
 
-  @action setCurveOverride(name: string, override: CurveOverride | undefined): void {
+  setCurveOverride = (name: string, override: CurveOverride | undefined): void => {
     const target = this.activeColours.find((a) => a.definition.name === name);
     if (target) {
       target.curveOverride = override;
     }
-  }
+  };
 }

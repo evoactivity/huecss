@@ -1,6 +1,5 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
-import { action } from "@ember/object";
 import { on } from "@ember/modifier";
 import { modifier } from "ember-modifier";
 import { createHighlighter } from "shiki";
@@ -39,17 +38,17 @@ export default class CssOutput extends Component<Signature> {
     });
   });
 
-  @action toggleOpen(): void {
+  toggleOpen = (): void => {
     this.isOpen = !this.isOpen;
-  }
+  };
 
-  @action async handleCopy(): Promise<void> {
+  handleCopy = async (): Promise<void> => {
     await navigator.clipboard.writeText(this.args.css);
     this.copyLabel = "Copied!";
     setTimeout(() => {
       this.copyLabel = "Copy";
     }, 1500);
-  }
+  };
 
   <template>
     <div class={{styles.bar}}>

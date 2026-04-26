@@ -1,6 +1,5 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
-import { action } from "@ember/object";
 import { on } from "@ember/modifier";
 import { modifier } from "ember-modifier";
 import onClickOutside from "ember-click-outside/modifiers/on-click-outside";
@@ -54,7 +53,7 @@ export default class DraggableModal extends Component<Signature> {
     };
   });
 
-  @action onHeaderPointerDown(e: PointerEvent): void {
+  onHeaderPointerDown = (e: PointerEvent): void => {
     // Don't initiate drag when clicking buttons inside the header (e.g. close)
     if ((e.target as HTMLElement).closest("button")) return;
     e.preventDefault();
@@ -62,9 +61,9 @@ export default class DraggableModal extends Component<Signature> {
     this.dragOffsetX = e.clientX - this.x;
     this.dragOffsetY = e.clientY - this.y;
     (e.currentTarget as Element).setPointerCapture(e.pointerId);
-  }
+  };
 
-  @action onHeaderPointerMove(e: PointerEvent): void {
+  onHeaderPointerMove = (e: PointerEvent): void => {
     if (!this.isDragging) return;
     const newX = e.clientX - this.dragOffsetX;
     const newY = e.clientY - this.dragOffsetY;
@@ -72,11 +71,11 @@ export default class DraggableModal extends Component<Signature> {
     const maxY = window.innerHeight - 60;
     this.x = Math.min(maxX, Math.max(0, newX));
     this.y = Math.min(maxY, Math.max(0, newY));
-  }
+  };
 
-  @action onHeaderPointerUp(): void {
+  onHeaderPointerUp = (): void => {
     this.isDragging = false;
-  }
+  };
 
   <template>
     <div

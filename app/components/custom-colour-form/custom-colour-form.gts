@@ -1,6 +1,5 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
-import { action } from "@ember/object";
 import { on } from "@ember/modifier";
 import { not } from "#utils/helpers";
 import type { ColourDefinition } from "#utils/colours";
@@ -95,30 +94,30 @@ export default class CustomColourForm extends Component<Signature> {
     return this.name.trim().length > 0 && this.nameError === null;
   }
 
-  @action onHueChange(hue: number): void {
+  onHueChange = (hue: number): void => {
     this.hue = hue;
-  }
+  };
 
-  @action onLightnessChange(value: number): void {
+  onLightnessChange = (value: number): void => {
     this.lightness = value;
-  }
+  };
 
-  @action onChromaChange(value: number): void {
+  onChromaChange = (value: number): void => {
     this.chroma = value;
-  }
+  };
 
-  @action onColourFocus(): void {
+  onColourFocus = (): void => {
     this.inputFocused = true;
     this.colourInput = this.colourString;
     this.colourInvalid = false;
-  }
+  };
 
-  @action onColourBlur(): void {
+  onColourBlur = (): void => {
     this.inputFocused = false;
     this.colourInvalid = false;
-  }
+  };
 
-  @action onColourInput(e: Event): void {
+  onColourInput = (e: Event): void => {
     const raw = (e.target as HTMLInputElement).value;
     this.colourInput = raw;
     if (!raw.trim()) {
@@ -134,13 +133,13 @@ export default class CustomColourForm extends Component<Signature> {
     } else {
       this.colourInvalid = true;
     }
-  }
+  };
 
-  @action onNameInput(e: Event): void {
+  onNameInput = (e: Event): void => {
     this.name = (e.target as HTMLInputElement).value;
-  }
+  };
 
-  @action handleSubmit(e: Event): void {
+  handleSubmit = (e: Event): void => {
     e.preventDefault();
     if (!this.canSubmit) return;
     this.args.onAdd({
@@ -154,7 +153,7 @@ export default class CustomColourForm extends Component<Signature> {
     this.lightness = 0.55;
     this.chroma = 0.15;
     this.colourInput = "";
-  }
+  };
 
   <template>
     <form class={{styles.form}} {{on "submit" this.handleSubmit}}>

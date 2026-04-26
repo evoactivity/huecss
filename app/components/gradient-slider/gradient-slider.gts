@@ -1,5 +1,4 @@
 import Component from "@glimmer/component";
-import { action } from "@ember/object";
 import { on } from "@ember/modifier";
 import { htmlSafe } from "@ember/template";
 import type { SafeString } from "@ember/template";
@@ -23,9 +22,9 @@ interface Signature {
 }
 
 export default class GradientSlider extends Component<Signature> {
-  @action onInput(e: Event): void {
+  onInput = (e: Event): void => {
     this.args.onChange(parseFloat((e.target as HTMLInputElement).value));
-  }
+  };
 
   get trackStyle(): SafeString {
     return htmlSafe(`--gradient: ${this.args.gradient}; --thumb-colour: ${this.args.thumbColour}`);

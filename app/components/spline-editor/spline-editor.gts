@@ -1,5 +1,4 @@
 import Component from "@glimmer/component";
-import { action } from "@ember/object";
 import { on } from "@ember/modifier";
 import { modifier } from "ember-modifier";
 import type { BezierCurve } from "#utils/spline";
@@ -300,17 +299,18 @@ export default class SplineEditor extends Component<Signature> {
     }
   }
 
-  @action onPointerDown(e: PointerEvent): void {
+  onPointerDown = (e: PointerEvent): void => {
     e.stopPropagation();
     this.startDrag(e);
-  }
+  };
 
-  @action onPointerMove(e: PointerEvent): void {
+  onPointerMove = (e: PointerEvent): void => {
     this.applyDrag(e);
-  }
-  @action onPointerUp(): void {
+  };
+
+  onPointerUp = (): void => {
     this.dragging = null;
-  }
+  };
 
   <template>
     <div class={{styles.wrapper}}>

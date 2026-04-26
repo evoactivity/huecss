@@ -1,6 +1,5 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
-import { action } from "@ember/object";
 import { on } from "@ember/modifier";
 import type { ToneAnchor } from "#utils/interpolate";
 import type { ColourToken } from "#utils/token-generator";
@@ -77,28 +76,30 @@ export default class TonePicker extends Component<Signature> {
     return this.c.toFixed(3);
   }
 
-  @action onHueChange(hue: number): void {
+  onHueChange = (hue: number): void => {
     this.args.onChange({ l: this.l, c: this.c, h: hue });
-  }
-  @action onLightnessChange(l: number): void {
-    this.args.onChange({ l, c: this.c, h: this.h });
-  }
-  @action onChromaChange(c: number): void {
-    this.args.onChange({ l: this.l, c, h: this.h });
-  }
+  };
 
-  @action onColourFocus(): void {
+  onLightnessChange = (l: number): void => {
+    this.args.onChange({ l, c: this.c, h: this.h });
+  };
+
+  onChromaChange = (c: number): void => {
+    this.args.onChange({ l: this.l, c, h: this.h });
+  };
+
+  onColourFocus = (): void => {
     this.inputFocused = true;
     this.colourInput = this.colourString;
     this.colourInvalid = false;
-  }
+  };
 
-  @action onColourBlur(): void {
+  onColourBlur = (): void => {
     this.inputFocused = false;
     this.colourInvalid = false;
-  }
+  };
 
-  @action onColourInput(e: Event): void {
+  onColourInput = (e: Event): void => {
     const raw = (e.target as HTMLInputElement).value;
     this.colourInput = raw;
     if (!raw.trim()) {
@@ -112,7 +113,7 @@ export default class TonePicker extends Component<Signature> {
     } else {
       this.colourInvalid = true;
     }
-  }
+  };
 
   <template>
     <div class={{styles.picker}}>

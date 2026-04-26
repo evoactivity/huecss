@@ -1,5 +1,4 @@
 import Component from "@glimmer/component";
-import { action } from "@ember/object";
 import { on } from "@ember/modifier";
 import { fn } from "@ember/helper";
 import type { InterpolationMode } from "#utils/interpolate";
@@ -14,9 +13,9 @@ interface Signature {
 }
 
 export default class AppHeader extends Component<Signature> {
-  @action onTabClick(mode: InterpolationMode): void {
+  onTabClick = (mode: InterpolationMode): void => {
     this.args.onModeChange(mode);
-  }
+  };
 
   <template>
     <header class="app-header">

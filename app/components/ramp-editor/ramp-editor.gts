@@ -1,6 +1,5 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
-import { action } from "@ember/object";
 import { on } from "@ember/modifier";
 import { fn } from "@ember/helper";
 import type { ColourToken, ActiveColour } from "#utils/token-generator";
@@ -43,7 +42,7 @@ export default class RampEditor extends Component<Signature> {
     return htmlSafe(`background: oklch(${token.l} ${token.c} ${token.h})`);
   };
 
-  @action onSwatchClick(tone: Tone, e: MouseEvent): void {
+  onSwatchClick = (tone: Tone, e: MouseEvent): void => {
     if (this.openTone === tone) {
       this.openTone = null;
       return;
@@ -60,9 +59,9 @@ export default class RampEditor extends Component<Signature> {
     }
     this.modalPosition = { x, y };
     this.openTone = tone;
-  }
+  };
 
-  @action onPickerChange(tone: Tone, values: { l: number; c: number; h: number }): void {
+  onPickerChange = (tone: Tone, values: { l: number; c: number; h: number }): void => {
     const idx = this.anchors.findIndex((a) => a.tone === tone);
     if (idx !== -1) {
       Object.assign(this.anchors[idx]!, values);
@@ -76,9 +75,9 @@ export default class RampEditor extends Component<Signature> {
         this.anchors.splice(insertAt, 0, newAnchor);
       }
     }
-  }
+  };
 
-  @action onRemoveAnchor(tone: Tone): void {
+  onRemoveAnchor = (tone: Tone): void => {
     const isEndpoint = tone === 50 || tone === 950 || tone === 500;
     if (isEndpoint) {
       const { lightness, chroma } = effectiveCurves(this.args.active, DEFAULT_GLOBAL_CURVES);
@@ -90,11 +89,11 @@ export default class RampEditor extends Component<Signature> {
       if (idx !== -1) this.anchors.splice(idx, 1);
     }
     this.openTone = null;
-  }
+  };
 
-  @action onModalClose(): void {
+  onModalClose = (): void => {
     this.openTone = null;
-  }
+  };
 
   <template>
     <div class={{styles.wrapper}}>

@@ -1,5 +1,4 @@
 import Component from "@glimmer/component";
-import { action } from "@ember/object";
 import { on } from "@ember/modifier";
 import { modifier } from "ember-modifier";
 import { htmlSafe } from "@ember/template";
@@ -102,20 +101,20 @@ export default class HueWheel extends Component<Signature> {
     this.args.onChange(Math.round(hue * 10) / 10);
   }
 
-  @action onPointerDown(e: PointerEvent): void {
+  onPointerDown = (e: PointerEvent): void => {
     this.isDragging = true;
     (e.currentTarget as Element).setPointerCapture(e.pointerId);
     this.pickHueFromEvent(e);
-  }
+  };
 
-  @action onPointerMove(e: PointerEvent): void {
+  onPointerMove = (e: PointerEvent): void => {
     if (!this.isDragging) return;
     this.pickHueFromEvent(e);
-  }
+  };
 
-  @action onPointerUp(): void {
+  onPointerUp = (): void => {
     this.isDragging = false;
-  }
+  };
 
   <template>
     <div class={{styles.wrapper}}>
