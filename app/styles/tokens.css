@@ -1,0 +1,49 @@
+:root {
+  /* Fonts */
+  --font-sans: "Geist", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-mono: "Geist Mono", "Office Code Pro", Menlo, monospace;
+
+  /* Backgrounds */
+  --color-bg-page: #171717;
+  --color-bg-panel: #0f0f0f;
+  --color-bg-raised: #1c1c1c;
+
+  /* Borders */
+  --color-border-subtle: #242424;
+  --color-border-default: #2e2e2e;
+  --color-border-strong: #363636;
+  --color-border-stronger: #393939;
+
+  /* Text */
+  --color-text-primary: #fafafa;
+  --color-text-secondary: #b4b4b4;
+  --color-text-muted: #898989;
+  --color-text-faint: #4d4d4d;
+
+  /* Brand green */
+  --color-green: #3ecf8e;
+  --color-green-link: #00c573;
+  --color-green-border: rgba(62, 207, 142, 0.3);
+
+  /* Spacing scale (8px base) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* Border radius */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-pill: 9999px;
+
+  /* Layout */
+  --panel-width: 320px;
+  --header-height: 56px;
+  --output-height: 48px;
+}

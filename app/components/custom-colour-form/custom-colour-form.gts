@@ -7,6 +7,8 @@ import type { ColourDefinition } from "#utils/colours";
 import { hexToOklch } from "#utils/colour-convert";
 import HueWheel from "#components/hue-wheel/hue-wheel";
 import GradientSlider from "#components/gradient-slider/gradient-slider";
+import { htmlSafe } from "@ember/template";
+import type { SafeString } from "@ember/template";
 import styles from "./custom-colour-form.module.css";
 
 interface Signature {
@@ -24,8 +26,8 @@ export default class CustomColourForm extends Component<Signature> {
   @tracked hexInput = "";
   @tracked hexError = false;
 
-  get previewColour(): string {
-    return `oklch(${this.lightness} ${this.chroma} ${this.hue})`;
+  get previewStyle(): SafeString {
+    return htmlSafe(`background: oklch(${this.lightness} ${this.chroma} ${this.hue})`);
   }
 
   // Lightness gradient: black → current colour → white, keeping C and H fixed.
@@ -149,7 +151,7 @@ export default class CustomColourForm extends Component<Signature> {
           value={{this.hexInput}}
           {{on "input" this.onHexInput}}
         />
-        <div class={{styles.hexSwatch}} style="background: {{this.previewColour}}"></div>
+        <div class={{styles.hexSwatch}} style={{this.previewStyle}}></div>
       </div>
 
       <div class={{styles.row}}>
@@ -192,7 +194,7 @@ export default class CustomColourForm extends Component<Signature> {
 
       {{! Name and add }}
       <div class={{styles.nameRow}}>
-        <div class={{styles.field}} style="flex: 1">
+        <div class={{styles.field}}>
           <input
             id="custom-colour-name"
             class={{styles.nameInput}}

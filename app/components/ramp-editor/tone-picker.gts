@@ -9,6 +9,8 @@ import { hexToOklch } from "#utils/colour-convert";
 import { or } from "#utils/helpers";
 import HueWheel from "#components/hue-wheel/hue-wheel";
 import GradientSlider from "#components/gradient-slider/gradient-slider";
+import { htmlSafe } from "@ember/template";
+import type { SafeString } from "@ember/template";
 import styles from "./tone-picker.module.css";
 
 interface Signature {
@@ -37,16 +39,14 @@ export default class TonePicker extends Component<Signature> {
     return this.args.anchor?.h ?? this.args.token?.h ?? 0;
   }
 
-  get previewStyle(): string {
-    return `background: oklch(${this.l} ${this.c} ${this.h})`;
+  get previewStyle(): SafeString {
+    return htmlSafe(`background: oklch(${this.l} ${this.c} ${this.h})`);
   }
-
-  get removeLabel(): string {
-    return this.args.isEndpoint ? "Reset to default" : "Remove anchor";
-  }
-
   get isAnchored(): boolean {
     return this.args.anchor !== undefined;
+  }
+  get removeLabel(): string {
+    return this.args.isEndpoint ? "Reset to default" : "Remove anchor";
   }
 
   get lightnessGradient(): string {
@@ -62,7 +62,6 @@ export default class TonePicker extends Component<Signature> {
   get thumbColour(): string {
     return `oklch(${this.l} ${this.c} ${this.h})`;
   }
-
   get lDisplay(): string {
     return this.l.toFixed(3);
   }
@@ -73,11 +72,9 @@ export default class TonePicker extends Component<Signature> {
   @action onHueChange(hue: number): void {
     this.args.onChange({ l: this.l, c: this.c, h: hue });
   }
-
   @action onLightnessChange(l: number): void {
     this.args.onChange({ l, c: this.c, h: this.h });
   }
-
   @action onChromaChange(c: number): void {
     this.args.onChange({ l: this.l, c, h: this.h });
   }
@@ -100,14 +97,6 @@ export default class TonePicker extends Component<Signature> {
 
   <template>
     <div class={{styles.picker}}>
-      <div class={{styles.header}}>
-        <span class={{styles.title}}>Tone {{@tone}}</span>
-        <button type="button" class={{styles.closeButton}} {{on "click" @onClose}}>
-          Close
-        </button>
-      </div>
-
-      {{! Hex input }}
       <div class={{styles.hexRow}}>
         <input
           class="{{styles.hexInput}} {{if this.hexInvalid styles.invalid}}"
@@ -120,7 +109,6 @@ export default class TonePicker extends Component<Signature> {
       </div>
 
       <div class={{styles.row}}>
-        {{! Hue wheel }}
         <div class={{styles.wheelCol}}>
           <HueWheel
             @hue={{this.h}}
@@ -129,8 +117,6 @@ export default class TonePicker extends Component<Signature> {
             @onChange={{this.onHueChange}}
           />
         </div>
-
-        {{! L and C gradient sliders }}
         <div class={{styles.slidersCol}}>
           <GradientSlider
             @label="Lightness"
@@ -157,14 +143,13 @@ export default class TonePicker extends Component<Signature> {
         </div>
       </div>
 
-      {{! Actions }}
-      <div class={{styles.actions}}>
-        {{#if (or this.isAnchored @isEndpoint)}}
+      {{#if (or this.isAnchored @isEndpoint)}}
+        <div class={{styles.actions}}>
           <button type="button" class={{styles.removeButton}} {{on "click" @onRemove}}>
             {{this.removeLabel}}
           </button>
-        {{/if}}
-      </div>
+        </div>
+      {{/if}}
     </div>
   </template>
 }

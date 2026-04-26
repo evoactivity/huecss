@@ -9,3 +9,7 @@ export function not(a: unknown): boolean {
 export function or(...args: unknown[]): boolean {
   return args.some(Boolean);
 }
+
+export function and(...args: unknown[]): boolean {
+  return args.every(Boolean);
+}

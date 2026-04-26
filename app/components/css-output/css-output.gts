@@ -12,7 +12,7 @@ let highlighterPromise: ReturnType<typeof createHighlighter> | null = null;
 function getHighlighter() {
   if (!highlighterPromise) {
     highlighterPromise = createHighlighter({
-      themes: ["github-light"],
+      themes: ["vitesse-dark"],
       langs: ["css"],
     });
   }
@@ -28,16 +28,20 @@ interface Signature {
 export default class CssOutput extends Component<Signature> {
   @tracked highlightedHtml = "";
   @tracked copyLabel = "Copy";
+  @tracked isOpen = true;
 
-  // Re-highlight whenever @css changes
-  highlightModifier = modifier((_el: Element, [css]: [string]) => {
+  highlightModifier = modifier((el: Element, [css]: [string]) => {
     void getHighlighter().then((hl) => {
-      this.highlightedHtml = hl.codeToHtml(css, {
+      el.innerHTML = hl.codeToHtml(css, {
         lang: "css",
-        theme: "github-light",
+        theme: "vitesse-dark",
       });
     });
   });
+
+  @action toggleOpen(): void {
+    this.isOpen = !this.isOpen;
+  }
 
   @action async handleCopy(): Promise<void> {
     await navigator.clipboard.writeText(this.args.css);
@@ -48,19 +52,30 @@ export default class CssOutput extends Component<Signature> {
   }
 
   <template>
-    <div class={{styles.wrapper}}>
-      <div class={{styles.header}}>
-        <span class={{styles.title}}>Generated CSS</span>
+    <div class={{styles.bar}}>
+      <div class={{styles.barHeader}}>
+        <button
+          type="button"
+          class={{styles.toggle}}
+          aria-expanded={{this.isOpen}}
+          {{on "click" this.toggleOpen}}
+        >
+          <span class={{styles.toggleIcon}}>{{if this.isOpen "▾" "▸"}}</span>
+          <span class={{styles.toggleLabel}}>CSS output</span>
+        </button>
+
         <button type="button" class={{styles.copyButton}} {{on "click" this.handleCopy}}>
           {{this.copyLabel}}
         </button>
       </div>
-      {{! Apply modifier to trigger re-highlighting when @css changes }}
-      <div class={{styles.codeBlock}} {{this.highlightModifier @css}}>
-        {{! Shiki returns sanitised HTML }}
-        {{! template-lint-disable no-triple-curlies }}
-        {{{this.highlightedHtml}}}
-      </div>
+
+      {{#if this.isOpen}}
+        <div class={{styles.codeBlock}} {{this.highlightModifier @css}}>
+          {{! Shiki returns sanitised HTML }}
+          {{! template-lint-disable no-triple-curlies }}
+          <pre>{{@css}}</pre>
+        </div>
+      {{/if}}
     </div>
   </template>
 }

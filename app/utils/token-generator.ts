@@ -1,3 +1,4 @@
+import { trackedArray } from "@ember/reactive/collections";
 import type { ColourDefinition } from "#utils/colours";
 import type { BezierCurve } from "#utils/spline";
 import { interpolateRamp, seedAnchors } from "#utils/interpolate";
@@ -72,7 +73,7 @@ export function activateColour(
 
   return {
     definition,
-    anchors: seedAnchors(definition, lightnessCurve, chromaCurve),
+    anchors: trackedArray(seedAnchors(definition, lightnessCurve, chromaCurve)),
     interpolationMode,
   };
 }

@@ -1,0 +1,198 @@
+/* App shell layout */
+
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* ── Header ── */
+
+.app-header {
+  flex-shrink: 0;
+  height: var(--header-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-6);
+  background: var(--color-bg-panel);
+  border-bottom: 1px solid var(--color-border-subtle);
+  z-index: 10;
+}
+
+.app-header__wordmark {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  letter-spacing: -0.3px;
+}
+
+.app-header__wordmark span {
+  color: var(--color-green);
+}
+
+/* Interpolation mode tabs */
+.app-header__tabs {
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-pill);
+}
+
+.app-header__tab {
+  padding: 4px 14px;
+  font-size: 12px;
+  font-weight: 400;
+  font-family: var(--font-mono);
+  color: var(--color-text-muted);
+  border-radius: var(--radius-pill);
+  border: 1px solid transparent;
+  transition:
+    color 0.1s,
+    border-color 0.1s,
+    background 0.1s;
+  cursor: pointer;
+  background: transparent;
+}
+
+.app-header__tab:hover {
+  color: var(--color-text-secondary);
+}
+
+.app-header__tab--active {
+  background: var(--color-bg-raised);
+  border-color: var(--color-green-border);
+  color: var(--color-green);
+}
+
+/* ── Body: left panel + right workspace ── */
+
+.app-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ── Left panel ── */
+
+.app-panel {
+  flex-shrink: 0;
+  width: var(--panel-width);
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg-panel);
+  border-right: 1px solid var(--color-border-subtle);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.app-panel__section {
+  padding: var(--space-4) var(--space-4);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.app-panel__section:last-child {
+  border-bottom: none;
+  flex: 1;
+}
+
+.app-panel__label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-3);
+}
+
+/* ── Right workspace ── */
+
+.app-workspace {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg-page);
+  overflow: hidden;
+}
+
+.app-workspace__scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-4) var(--space-6);
+}
+
+/* ── Empty state ── */
+
+.app-workspace__empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+/* ── Workspace ramp rows ── */
+
+.workspace-ramp {
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-border-subtle);
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.workspace-ramp:last-child {
+  border-bottom: none;
+}
+
+.workspace-ramp__name {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+  width: 80px;
+  margin: 0;
+}
+
+/* ── Utility classes ── */
+
+.mono-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--color-text-muted);
+}
+
+/* Focus ring -- using green accent per design system */
+:focus-visible {
+  outline: 1.5px solid var(--color-green-border);
+  outline-offset: 2px;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border-strong);
+  border-radius: var(--radius-pill);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-border-stronger);
+}

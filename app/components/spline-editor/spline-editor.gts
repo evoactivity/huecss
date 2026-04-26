@@ -12,6 +12,8 @@ import {
   ANCHOR_Y,
 } from "#utils/spline";
 import type { ColourToken } from "#utils/token-generator";
+import { htmlSafe } from "@ember/template";
+import type { SafeString } from "@ember/template";
 import styles from "./spline-editor.module.css";
 
 const SVG_W = 800;
@@ -28,7 +30,7 @@ interface ToneMarker {
   x: number;
   y: number;
   size: number;
-  fill: string;
+  fill: SafeString;
   isAnchor: boolean;
 }
 
@@ -114,14 +116,18 @@ export default class SplineEditor extends Component<Signature> {
   }
 
   // Fill colour for p0 (tone 50) and p1 (tone 950) endpoints, taken from tokens when available
-  get p0Fill(): string {
+  get p0Fill(): SafeString {
     const token = this.args.tokens?.find((t) => t.tone === 50);
-    return token ? `oklch(${token.l} ${token.c} ${token.h})` : "oklch(1 0 0)";
+    return token
+      ? htmlSafe(`fill: oklch(${token.l} ${token.c} ${token.h})`)
+      : htmlSafe("fill: oklch(1 0 0)");
   }
 
-  get p1Fill(): string {
+  get p1Fill(): SafeString {
     const token = this.args.tokens?.find((t) => t.tone === 950);
-    return token ? `oklch(${token.l} ${token.c} ${token.h})` : "oklch(0.15 0 0)";
+    return token
+      ? htmlSafe(`fill: oklch(${token.l} ${token.c} ${token.h})`)
+      : htmlSafe("fill: oklch(0.15 0 0)");
   }
 
   get gridLines(): Array<{ d: string; axis: boolean }> {
@@ -168,7 +174,7 @@ export default class SplineEditor extends Component<Signature> {
         x: cx - size / 2,
         y: cy - size / 2,
         size,
-        fill: `oklch(${token.l} ${token.c} ${token.h})`,
+        fill: htmlSafe(`fill: oklch(${token.l} ${token.c} ${token.h})`),
         isAnchor,
       };
     });
@@ -332,7 +338,7 @@ export default class SplineEditor extends Component<Signature> {
             y={{marker.y}}
             width={{marker.size}}
             height={{marker.size}}
-            style="fill: {{marker.fill}}"
+            style={{marker.fill}}
           />
         {{/each}}
 
@@ -395,7 +401,7 @@ export default class SplineEditor extends Component<Signature> {
           cx={{this.p0x}}
           cy={{this.p0y}}
           r={{POINT_R}}
-          style="fill: {{this.p0Fill}}"
+          style={{this.p0Fill}}
           {{on "pointerdown" this.onPointerDown}}
         />
         <circle
@@ -404,7 +410,7 @@ export default class SplineEditor extends Component<Signature> {
           cx={{this.p1x}}
           cy={{this.p1y}}
           r={{POINT_R}}
-          style="fill: {{this.p1Fill}}"
+          style={{this.p1Fill}}
           {{on "pointerdown" this.onPointerDown}}
         />
       </svg>

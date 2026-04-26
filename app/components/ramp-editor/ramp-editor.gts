@@ -9,77 +9,90 @@ import type { ToneAnchor } from "#utils/interpolate";
 import { revertAnchor } from "#utils/interpolate";
 import type { Tone } from "#utils/colours";
 import { TONES } from "#utils/colours";
+import { eq, or, and, not } from "#utils/helpers";
+import { trackedObject } from "@ember/reactive/collections";
+import DraggableModal from "#components/draggable-modal/draggable-modal";
+import type { ModalPosition } from "#components/draggable-modal/draggable-modal";
 import TonePicker from "#components/ramp-editor/tone-picker";
-import { eq, or } from "#utils/helpers";
+import { htmlSafe } from "@ember/template";
+import type { SafeString } from "@ember/template";
 import styles from "./ramp-editor.module.css";
 
 interface Signature {
   Args: {
     active: ActiveColour;
     tokens: ColourToken[];
-    onSetAnchors: (anchors: ToneAnchor[]) => void;
   };
 }
 
 export default class RampEditor extends Component<Signature> {
-  /** Tone whose picker is currently open, or null */
   @tracked openTone: Tone | null = null;
+  @tracked modalPosition: ModalPosition = { x: 0, y: 0 };
 
   get anchors(): ToneAnchor[] {
     return this.args.active.anchors;
   }
 
-  anchorAt = (tone: Tone): ToneAnchor | undefined => {
-    return this.anchors.find((a) => a.tone === tone);
-  };
+  anchorAt = (tone: Tone): ToneAnchor | undefined => this.anchors.find((a) => a.tone === tone);
 
-  tokenAt = (tone: Tone): ColourToken | undefined => {
-    return this.args.tokens.find((t) => t.tone === tone);
-  };
+  tokenAt = (tone: Tone): ColourToken | undefined => this.args.tokens.find((t) => t.tone === tone);
 
-  swatchStyle = (tone: Tone): string => {
+  swatchStyle = (tone: Tone): SafeString => {
     const token = this.tokenAt(tone);
-    if (!token) return "";
-    return `background: oklch(${token.l} ${token.c} ${token.h})`;
+    if (!token) return htmlSafe("background: #2e2e2e");
+    return htmlSafe(`background: oklch(${token.l} ${token.c} ${token.h})`);
   };
 
-  @action onSwatchClick(tone: Tone): void {
-    // Toggle picker: close if already open for this tone, open otherwise
-    this.openTone = this.openTone === tone ? null : tone;
+  @action onSwatchClick(tone: Tone, e: MouseEvent): void {
+    if (this.openTone === tone) {
+      this.openTone = null;
+      return;
+    }
+    // Position modal below (and horizontally centred on) the clicked swatch
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    const modalWidth = 320;
+    let x = rect.left + rect.width / 2 - modalWidth / 2;
+    let y = rect.bottom + 8;
+    // Clamp to viewport
+    x = Math.min(window.innerWidth - modalWidth - 8, Math.max(8, x));
+    if (y + 400 > window.innerHeight) {
+      y = rect.top - 8; // open above if near bottom
+    }
+    this.modalPosition = { x, y };
+    this.openTone = tone;
   }
 
   @action onPickerChange(tone: Tone, values: { l: number; c: number; h: number }): void {
-    const existing = this.anchorAt(tone);
-    if (existing) {
-      // Update existing anchor
-      this.args.onSetAnchors(
-        this.anchors.map((a) => (a.tone === tone ? { ...a, ...values, seeded: false } : a)),
-      );
+    const idx = this.anchors.findIndex((a) => a.tone === tone);
+    if (idx !== -1) {
+      Object.assign(this.anchors[idx]!, values);
+      this.anchors[idx]!.seeded = false;
     } else {
-      // Add new anchor, keep sorted
-      const newAnchor: ToneAnchor = { tone, ...values, seeded: false };
-      const sorted = [...this.anchors, newAnchor].sort((a, b) => a.tone - b.tone);
-      this.args.onSetAnchors(sorted);
+      const newAnchor: ToneAnchor = trackedObject({ tone, ...values, seeded: false });
+      const insertAt = this.anchors.findIndex((a) => a.tone > tone);
+      if (insertAt === -1) {
+        this.anchors.push(newAnchor);
+      } else {
+        this.anchors.splice(insertAt, 0, newAnchor);
+      }
     }
   }
 
   @action onRemoveAnchor(tone: Tone): void {
     const isEndpoint = tone === 50 || tone === 950 || tone === 500;
-
     if (isEndpoint) {
-      // Revert to default rather than remove
       const { lightness, chroma } = effectiveCurves(this.args.active, DEFAULT_GLOBAL_CURVES);
       const reverted = revertAnchor(tone, this.args.active.definition, lightness, chroma);
-      this.args.onSetAnchors(this.anchors.map((a) => (a.tone === tone ? reverted : a)));
+      const idx = this.anchors.findIndex((a) => a.tone === tone);
+      if (idx !== -1) Object.assign(this.anchors[idx]!, reverted);
     } else {
-      // Remove user anchor entirely
-      this.args.onSetAnchors(this.anchors.filter((a) => a.tone !== tone));
+      const idx = this.anchors.findIndex((a) => a.tone === tone);
+      if (idx !== -1) this.anchors.splice(idx, 1);
     }
-
     this.openTone = null;
   }
 
-  @action onPickerClose(): void {
+  @action onModalClose(): void {
     this.openTone = null;
   }
 
@@ -89,43 +102,48 @@ export default class RampEditor extends Component<Signature> {
         {{#each TONES as |tone|}}
           {{#let (this.anchorAt tone) as |anchor|}}
             <div class={{styles.toneSlot}}>
-              {{! Anchor marker dot -- always shown for seeded anchors, filled differently for user anchors }}
-              {{#if anchor}}
-                <div
-                  class="{{styles.anchorMarker}} {{if anchor.seeded styles.anchorMarkerSeeded}}"
-                ></div>
-              {{else}}
-                <div style="height: 8px"></div>
-              {{/if}}
-
+              <div class={{styles.dotRow}}>
+                {{#if anchor}}
+                  <div
+                    class="{{styles.dot}} {{if anchor.seeded styles.dotSeeded styles.dotUser}}"
+                  ></div>
+                {{else}}
+                  <div class={{styles.dotEmpty}}></div>
+                {{/if}}
+              </div>
               <button
                 type="button"
-                class="{{styles.swatch}} {{if (eq this.openTone tone) styles.swatchActive}}"
+                class="{{styles.swatch}}
+                  {{if (and anchor (not anchor.seeded)) styles.swatchAnchored}}
+                  {{if (eq this.openTone tone) styles.swatchActive}}"
                 style={{this.swatchStyle tone}}
-                title="Tone {{tone}}{{if anchor ' (anchored)'}}"
+                title="Tone {{tone}}{{if anchor (if anchor.seeded ' (seeded)' ' (anchored)')}}"
                 {{on "click" (fn this.onSwatchClick tone)}}
               ></button>
-
-              <span class={{styles.toneLabel}}>{{tone}}</span>
+              <span
+                class="{{styles.toneLabel}} {{if anchor styles.toneLabelVisible}}"
+              >{{tone}}</span>
             </div>
           {{/let}}
         {{/each}}
       </div>
 
       {{#if this.openTone}}
-        {{#let (this.anchorAt this.openTone) as |anchor|}}
-          <div class={{styles.pickerContainer}}>
-            <TonePicker
-              @tone={{this.openTone}}
-              @anchor={{anchor}}
-              @token={{(this.tokenAt this.openTone)}}
-              @isEndpoint={{or (eq this.openTone 50) (eq this.openTone 500) (eq this.openTone 950)}}
-              @onChange={{(fn this.onPickerChange this.openTone)}}
-              @onRemove={{(fn this.onRemoveAnchor this.openTone)}}
-              @onClose={{this.onPickerClose}}
-            />
-          </div>
-        {{/let}}
+        <DraggableModal
+          @title="Tone {{this.openTone}}"
+          @position={{this.modalPosition}}
+          @onClose={{this.onModalClose}}
+        >
+          <TonePicker
+            @tone={{this.openTone}}
+            @anchor={{(this.anchorAt this.openTone)}}
+            @token={{(this.tokenAt this.openTone)}}
+            @isEndpoint={{or (eq this.openTone 50) (eq this.openTone 500) (eq this.openTone 950)}}
+            @onChange={{(fn this.onPickerChange this.openTone)}}
+            @onRemove={{(fn this.onRemoveAnchor this.openTone)}}
+            @onClose={{this.onModalClose}}
+          />
+        </DraggableModal>
       {{/if}}
     </div>
   </template>

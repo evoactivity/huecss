@@ -1,5 +1,7 @@
 import Component from "@glimmer/component";
 import type { ColourToken } from "#utils/token-generator";
+import { htmlSafe } from "@ember/template";
+import type { SafeString } from "@ember/template";
 import styles from "./tone-swatches.module.css";
 
 interface Signature {
@@ -27,8 +29,8 @@ export default class ToneSwatches extends Component<Signature> {
     return Array.from(this.groupedTokens.entries()).map(([name, tokens]) => ({ name, tokens }));
   }
 
-  swatchStyle = (token: ColourToken): string => {
-    return `background: oklch(${token.l} ${token.c} ${token.h})`;
+  swatchStyle = (token: ColourToken): SafeString => {
+    return htmlSafe(`background: oklch(${token.l} ${token.c} ${token.h})`);
   };
 
   <template>

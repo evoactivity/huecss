@@ -2,6 +2,8 @@ import Component from "@glimmer/component";
 import { action } from "@ember/object";
 import { on } from "@ember/modifier";
 import { modifier } from "ember-modifier";
+import { htmlSafe } from "@ember/template";
+import type { SafeString } from "@ember/template";
 import styles from "./hue-wheel.module.css";
 
 // SVG coordinate space
@@ -79,8 +81,8 @@ export default class HueWheel extends Component<Signature> {
   }
 
   // The selected colour for the centre swatch
-  get centreColour(): string {
-    return `oklch(${this.args.lightness} ${this.args.chroma} ${this.args.hue})`;
+  get centreStyle(): SafeString {
+    return htmlSafe(`fill: oklch(${this.args.lightness} ${this.args.chroma} ${this.args.hue})`);
   }
 
   private pickHueFromEvent(event: PointerEvent): void {
@@ -131,7 +133,7 @@ export default class HueWheel extends Component<Signature> {
         {{/each}}
 
         {{! Centre swatch showing current colour -- smaller than INNER_R to create gap }}
-        <circle cx={{CX}} cy={{CY}} r={{CENTRE_R}} style="fill: {{this.centreColour}}" />
+        <circle cx={{CX}} cy={{CY}} r={{CENTRE_R}} style={{this.centreStyle}} />
 
         {{! Indicator dot at selected hue }}
         <circle

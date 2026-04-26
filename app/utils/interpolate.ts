@@ -1,4 +1,5 @@
 import chroma from "chroma-js";
+import { trackedObject } from "@ember/reactive/collections";
 import { evaluateBezier, toneToX } from "#utils/spline";
 import type { BezierCurve } from "#utils/spline";
 import type { ColourDefinition, Tone } from "#utils/colours";
@@ -63,9 +64,15 @@ export function seedAnchors(
   const tone950 = colourFromCurve(950, definition, lightnessCurve, chromaCurve);
 
   return [
-    { tone: 50, ...tone50, seeded: true },
-    { tone: 500, l: definition.lightness, c: definition.chroma, h: definition.hue, seeded: true },
-    { tone: 950, ...tone950, seeded: true },
+    trackedObject({ tone: 50, ...tone50, seeded: true }),
+    trackedObject({
+      tone: 500,
+      l: definition.lightness,
+      c: definition.chroma,
+      h: definition.hue,
+      seeded: true,
+    }),
+    trackedObject({ tone: 950, ...tone950, seeded: true }),
   ];
 }
 
@@ -80,15 +87,19 @@ export function revertAnchor(
   chromaCurve: BezierCurve,
 ): ToneAnchor {
   if (tone === 500) {
-    return {
+    return trackedObject({
       tone: 500,
       l: definition.lightness,
       c: definition.chroma,
       h: definition.hue,
       seeded: true,
-    };
+    });
   }
-  return { tone, ...colourFromCurve(tone, definition, lightnessCurve, chromaCurve), seeded: true };
+  return trackedObject({
+    tone,
+    ...colourFromCurve(tone, definition, lightnessCurve, chromaCurve),
+    seeded: true,
+  });
 }
 
 /**
@@ -121,7 +132,7 @@ export function interpolateRamp(
       name: definition.name,
       tone,
       variable: `--color-${definition.name}-${tone}`,
-      value: `${l} ${c} ${h}`,
+      value: `${round(l * 100, 2)}% ${c} ${h}`,
       l,
       c,
       h,
