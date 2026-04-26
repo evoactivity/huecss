@@ -70,6 +70,7 @@
     "ember-eslint": "0.6.1",
     "ember-vitest": "^0.3.3",
     "eslint": "9.39.4",
+    "playwright": "1.59.1",
     "prettier": "3.8.3",
     "prettier-plugin-ember-template-tag": "2.1.5",
     "testem": "3.17.0",
