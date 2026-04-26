@@ -1,0 +1,42 @@
+.colour {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.colourName {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.swatches {
+  display: flex;
+  gap: 2px;
+}
+
+.swatch {
+  flex: 1;
+  height: 40px;
+  border-radius: 0.25rem;
+  position: relative;
+}
+
+.swatch:hover .toneLabel {
+  opacity: 1;
+}
+
+.toneLabel {
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 0.6rem;
+  opacity: 0;
+  transition: opacity 0.1s;
+  /* Readable on any background */
+  mix-blend-mode: difference;
+  color: white;
+}

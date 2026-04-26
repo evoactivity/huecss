@@ -18,7 +18,7 @@ function removeCrossOrigin() {
 export default defineConfig({
   base: "/huecss/",
   test: {
-    include: ["tests/**/*.test.{gjs,gts}"],
+    include: ["tests/**/*.test.{gjs,gts,ts}"],
     maxConcurrency: 1,
     browser: {
       provider: isCI ? playwright() : preview(),
