@@ -11,22 +11,12 @@
   gap: 4px;
   padding: 0;
   border-radius: var(--radius-sm);
-  border: 1px solid transparent;
   background: none;
   cursor: pointer;
   transition:
     background 0.1s,
     border-color 0.1s;
-}
-
-.swatch:hover {
-  background: var(--color-bg-raised);
-  border-color: var(--color-border-default);
-}
-
-.swatch.active {
-  background: var(--color-bg-raised);
-  border-color: var(--color-green-border);
+  max-width: 42px;
 }
 
 .dot {

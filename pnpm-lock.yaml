@@ -22,6 +22,9 @@ importers:
       decorator-transforms:
         specifier: 2.3.1
         version: 2.3.1(@babel/core@7.29.0)
+      ember-click-outside:
+        specifier: ^6.1.1
+        version: 6.1.1(@babel/core@7.29.0)
       ember-modifier:
         specifier: ^4.3.0
         version: 4.3.0(@babel/core@7.29.0)
@@ -3821,6 +3824,12 @@ packages:
         integrity: sha512-rk7GY+FmLn/2e22HsZs0Ycrz8HQ1W3Fv+2TFOuEFW9optnDXDgkntPBIl6gact/LHsfBM5RKbM3dHsIIeLgl0Q==,
       }
     engines: { node: 10.* || >= 12.* }
+
+  ember-click-outside@6.1.1:
+    resolution:
+      {
+        integrity: sha512-1SOW92/k5vm+QiLBdkiSxkxSEzvA1vWdVVAI5RLV9JFztA5cSEKB2m2+10Gvw90ItxekY92JVXXTXIPUcPBqYg==,
+      }
 
   ember-eslint-parser@0.5.13:
     resolution:
@@ -9980,6 +9989,14 @@ snapshots:
       semver: 7.7.4
       silent-error: 1.1.1
     transitivePeerDependencies:
+      - supports-color
+
+  ember-click-outside@6.1.1(@babel/core@7.29.0):
+    dependencies:
+      "@embroider/addon-shim": 1.10.2
+      ember-modifier: 4.3.0(@babel/core@7.29.0)
+    transitivePeerDependencies:
+      - "@babel/core"
       - supports-color
 
   ember-eslint-parser@0.5.13(@babel/core@7.29.0)(@typescript-eslint/parser@8.59.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3):

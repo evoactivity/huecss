@@ -6,8 +6,8 @@ export interface OklchColour {
   h: number; // 0-360
 }
 
-/** Convert a hex string to oklch. Returns null if the input cannot be parsed. */
-export function hexToOklch(hex: string): OklchColour | null {
+/** Convert any valid CSS colour string to oklch. Returns null if unparseable. */
+export function cssColourToOklch(hex: string): OklchColour | null {
   if (!chroma.valid(hex)) return null;
   const [l, c, h] = chroma(hex).oklch();
   return {

@@ -92,7 +92,7 @@ describe("DraggableModal", () => {
     expect(onClose).not.toHaveBeenCalled();
   });
 
-  test("pointerdown outside the modal calls onClose", async () => {
+  test("click outside the modal calls onClose", async () => {
     await using ctx = await setupRenderingContext();
     const onClose = vi.fn();
 
@@ -104,13 +104,32 @@ describe("DraggableModal", () => {
       </template>,
     );
 
-    // Wait for the deferred setTimeout(0) that arms the outside listener
+    // ember-click-outside defers listener registration by one tick
     await new Promise((r) => setTimeout(r, 10));
 
-    // Fire a pointerdown on the document outside the modal
-    document.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }));
+    document.dispatchEvent(new MouseEvent("click", { bubbles: true }));
 
     expect(onClose).toHaveBeenCalledOnce();
+  });
+
+  test("click inside the modal does not call onClose", async () => {
+    await using ctx = await setupRenderingContext();
+    const onClose = vi.fn();
+
+    await ctx.render(
+      <template>
+        <DraggableModal @title="Test" @position={{POSITION}} @onClose={{onClose}}>
+          <span id="inner">content</span>
+        </DraggableModal>
+      </template>,
+    );
+
+    await new Promise((r) => setTimeout(r, 10));
+
+    const inner = ctx.element.querySelector("#inner") as HTMLElement;
+    inner.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+
+    expect(onClose).not.toHaveBeenCalled();
   });
 
   test("applies position as inline style", async () => {

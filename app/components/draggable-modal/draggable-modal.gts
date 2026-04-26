@@ -3,10 +3,12 @@ import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
 import { on } from "@ember/modifier";
 import { modifier } from "ember-modifier";
+import onClickOutside from "ember-click-outside/modifiers/on-click-outside";
 import { htmlSafe } from "@ember/template";
 import type { SafeString } from "@ember/template";
 import styles from "./draggable-modal.module.css";
-
+import { swatch } from "../ramp-editor/ramp-editor.module.css";
+import { concat } from "@ember/helper";
 export interface ModalPosition {
   x: number;
   y: number;
@@ -35,7 +37,7 @@ export default class DraggableModal extends Component<Signature> {
     return htmlSafe(`left: ${this.x}px; top: ${this.y}px`);
   }
 
-  setupModal = modifier((el: HTMLElement) => {
+  setupModal = modifier(() => {
     // Sync position from args when it changes (new swatch clicked)
     this.x = this.args.position.x;
     this.y = this.args.position.y;
@@ -45,27 +47,10 @@ export default class DraggableModal extends Component<Signature> {
       if (e.key === "Escape") this.args.onClose();
     };
 
-    // Outside-click: only close if the press *started* outside the modal.
-    // We use pointerdown (not click) so pointer-captured drags on the hue
-    // wheel / sliders don't trigger a false close when the pointer is
-    // released outside the modal bounds.
-    const onPointerDown = (e: PointerEvent) => {
-      if (!el.contains(e.target as Node)) {
-        this.args.onClose();
-      }
-    };
-
     document.addEventListener("keydown", onKeyDown);
-    // Deferred so the pointerdown that opened the modal doesn't immediately
-    // fire the handler.
-    const timerId = setTimeout(() => {
-      document.addEventListener("pointerdown", onPointerDown);
-    }, 0);
 
     return () => {
-      clearTimeout(timerId);
       document.removeEventListener("keydown", onKeyDown);
-      document.removeEventListener("pointerdown", onPointerDown);
     };
   });
 
@@ -83,9 +68,8 @@ export default class DraggableModal extends Component<Signature> {
     if (!this.isDragging) return;
     const newX = e.clientX - this.dragOffsetX;
     const newY = e.clientY - this.dragOffsetY;
-    // Clamp to viewport
     const maxX = window.innerWidth - 320;
-    const maxY = window.innerHeight - 60; // at least header visible
+    const maxY = window.innerHeight - 60;
     this.x = Math.min(maxX, Math.max(0, newX));
     this.y = Math.min(maxY, Math.max(0, newY));
   }
@@ -95,7 +79,13 @@ export default class DraggableModal extends Component<Signature> {
   }
 
   <template>
-    <div class={{styles.modal}} style={{this.positionStyle}} {{this.setupModal}}>
+    <div
+      class={{styles.modal}}
+      style={{this.positionStyle}}
+      {{this.setupModal}}
+      {{onClickOutside @onClose exceptSelector=(concat "." swatch)}}
+    >
+      {{log swatch}}
       <div
         class={{styles.header}}
         {{on "pointerdown" this.onHeaderPointerDown}}

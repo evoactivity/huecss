@@ -9,6 +9,10 @@
   font-size: 0.8rem;
   font-weight: 600;
   text-transform: capitalize;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 
 .swatches {

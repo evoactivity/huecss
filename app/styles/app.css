@@ -11,25 +11,26 @@
 
 .app-header {
   flex-shrink: 0;
-  height: var(--header-height);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 var(--space-6);
+  padding: var(--space-4);
   background: var(--color-bg-panel);
   border-bottom: 1px solid var(--color-border-subtle);
   z-index: 10;
 }
 
 .app-header__wordmark {
-  font-size: 18px;
-  font-weight: 500;
+  font-size: 24px;
+  font-weight: 900;
   color: var(--color-text-primary);
   letter-spacing: -0.3px;
 }
 
 .app-header__wordmark span {
   color: var(--color-green);
+  font-weight: 100;
+  text-shadow: 0 0 10px var(--color-green);
 }
 
 /* Interpolation mode tabs */
@@ -159,6 +160,9 @@
   flex-shrink: 0;
   width: 80px;
   margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* ── Utility classes ── */
@@ -174,8 +178,9 @@
 
 /* Focus ring -- using green accent per design system */
 :focus-visible {
-  outline: 1.5px solid var(--color-green-border);
+  outline: 1.5px solid var(--color-green);
   outline-offset: 2px;
+  z-index: 2;
 }
 
 /* Scrollbar styling */

@@ -63,31 +63,25 @@
   font-variant-numeric: tabular-nums;
 }
 
-.hexRow {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+.colourInput {
+  width: 100%;
+  padding: 6px 10px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--color-text-primary);
+  background: var(--color-bg-raised);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-sm);
+  transition: border-color 0.1s;
+  box-sizing: border-box;
 }
 
-.hexInput {
-  font-family: monospace;
-  font-size: 0.875rem;
-  padding: 0.375rem 0.5rem;
-  border: 1px solid oklch(0.75 0 0);
-  border-radius: 0.375rem;
-  width: 9rem;
+.colourInput:focus {
+  border-color: var(--color-border-strong);
 }
 
-.hexInput.error {
-  border-color: oklch(0.6 0.2 27);
-}
-
-.hexSwatch {
-  width: 28px;
-  height: 28px;
-  border-radius: 0.25rem;
-  border: 1px solid oklch(0.85 0 0);
-  flex-shrink: 0;
+.colourInput.colourInvalid {
+  border-color: #e54d2e;
 }
 
 .nameRow {
@@ -100,33 +94,49 @@
 .nameInput {
   flex: 1;
   min-width: 0;
-  padding: 0.375rem 0.5rem;
-  border: 1px solid oklch(0.75 0 0);
-  border-radius: 0.375rem;
-  font-size: 0.875rem;
+  padding: 6px 10px;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: var(--color-text-primary);
+  background: var(--color-bg-raised);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-sm);
+  transition: border-color 0.1s;
+  box-sizing: border-box;
+}
+
+.nameInput:focus {
+  border-color: var(--color-border-strong);
 }
 
 .addButton {
-  padding: 0.375rem 0.875rem;
-  background: oklch(0.4 0 0);
-  color: oklch(1 0 0);
-  border: none;
-  border-radius: 0.375rem;
-  font-size: 0.875rem;
+  padding: 6px 12px;
+  background: var(--color-green);
+  color: #0f0f0f;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
   cursor: pointer;
   white-space: nowrap;
+  transition: background 0.1s;
 }
 
 .addButton:hover {
-  background: oklch(0.3 0 0);
+  background: var(--color-green-link);
+  color: #0f0f0f;
 }
 
 .addButton:disabled {
-  opacity: 0.4;
+  background: var(--color-bg-raised);
+  color: var(--color-text-muted);
+  border-color: var(--color-border-default);
+  opacity: 1;
   cursor: not-allowed;
 }
 
 .error {
-  font-size: 0.7rem;
-  color: oklch(0.5 0.2 27);
+  font-size: 11px;
+  color: #e54d2e;
 }

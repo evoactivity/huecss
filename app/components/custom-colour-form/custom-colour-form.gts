@@ -4,11 +4,9 @@ import { action } from "@ember/object";
 import { on } from "@ember/modifier";
 import { not } from "#utils/helpers";
 import type { ColourDefinition } from "#utils/colours";
-import { hexToOklch } from "#utils/colour-convert";
+import { cssColourToOklch } from "#utils/colour-convert";
 import HueWheel from "#components/hue-wheel/hue-wheel";
 import GradientSlider from "#components/gradient-slider/gradient-slider";
-import { htmlSafe } from "@ember/template";
-import type { SafeString } from "@ember/template";
 import styles from "./custom-colour-form.module.css";
 
 interface Signature {
@@ -23,11 +21,19 @@ export default class CustomColourForm extends Component<Signature> {
   @tracked hue = 0;
   @tracked lightness = 0.55;
   @tracked chroma = 0.15;
-  @tracked hexInput = "";
-  @tracked hexError = false;
+  @tracked colourInput = "";
+  @tracked colourInvalid = false;
+  @tracked inputFocused = false;
 
-  get previewStyle(): SafeString {
-    return htmlSafe(`background: oklch(${this.lightness} ${this.chroma} ${this.hue})`);
+  get colourString(): string {
+    const l = Math.round(this.lightness * 10000) / 100;
+    const c = Math.round(this.chroma * 10000) / 10000;
+    const h = Math.round(this.hue * 10) / 10;
+    return `oklch(${l}% ${c} ${h})`;
+  }
+
+  get inputValue(): string {
+    return this.inputFocused ? this.colourInput : this.colourString;
   }
 
   // Lightness gradient: black → current colour → white, keeping C and H fixed.
@@ -66,7 +72,7 @@ export default class CustomColourForm extends Component<Signature> {
   }
 
   get lightnessDisplay(): string {
-    return this.lightness.toFixed(3);
+    return `${(this.lightness * 100).toFixed(1)}%`;
   }
 
   get chromaDisplay(): string {
@@ -101,21 +107,32 @@ export default class CustomColourForm extends Component<Signature> {
     this.chroma = value;
   }
 
-  @action onHexInput(e: Event): void {
-    const raw = (e.target as HTMLInputElement).value.trim();
-    this.hexInput = raw;
-    if (!raw) {
-      this.hexError = false;
+  @action onColourFocus(): void {
+    this.inputFocused = true;
+    this.colourInput = this.colourString;
+    this.colourInvalid = false;
+  }
+
+  @action onColourBlur(): void {
+    this.inputFocused = false;
+    this.colourInvalid = false;
+  }
+
+  @action onColourInput(e: Event): void {
+    const raw = (e.target as HTMLInputElement).value;
+    this.colourInput = raw;
+    if (!raw.trim()) {
+      this.colourInvalid = false;
       return;
     }
-    const oklch = hexToOklch(raw);
+    const oklch = cssColourToOklch(raw.trim());
     if (oklch) {
       this.hue = Math.round(oklch.h * 10) / 10;
       this.lightness = Math.round(oklch.l * 1000) / 1000;
       this.chroma = Math.round(oklch.c * 1000) / 1000;
-      this.hexError = false;
+      this.colourInvalid = false;
     } else {
-      this.hexError = true;
+      this.colourInvalid = true;
     }
   }
 
@@ -136,23 +153,11 @@ export default class CustomColourForm extends Component<Signature> {
     this.hue = 0;
     this.lightness = 0.55;
     this.chroma = 0.15;
-    this.hexInput = "";
+    this.colourInput = "";
   }
 
   <template>
     <form class={{styles.form}} {{on "submit" this.handleSubmit}}>
-
-      {{! Hex paste }}
-      <div class={{styles.hexRow}}>
-        <input
-          class="{{styles.hexInput}} {{if this.hexError styles.error}}"
-          type="text"
-          placeholder="#hex"
-          value={{this.hexInput}}
-          {{on "input" this.onHexInput}}
-        />
-        <div class={{styles.hexSwatch}} style={{this.previewStyle}}></div>
-      </div>
 
       <div class={{styles.row}}>
         {{! Hue wheel }}
@@ -191,6 +196,16 @@ export default class CustomColourForm extends Component<Signature> {
           />
         </div>
       </div>
+
+      <input
+        class="{{styles.colourInput}} {{if this.colourInvalid styles.colourInvalid}}"
+        type="text"
+        placeholder="oklch(…) / #hex / rgb(…)"
+        value={{this.inputValue}}
+        {{on "focus" this.onColourFocus}}
+        {{on "blur" this.onColourBlur}}
+        {{on "input" this.onColourInput}}
+      />
 
       {{! Name and add }}
       <div class={{styles.nameRow}}>

@@ -5,12 +5,10 @@ import { on } from "@ember/modifier";
 import type { ToneAnchor } from "#utils/interpolate";
 import type { ColourToken } from "#utils/token-generator";
 import type { Tone } from "#utils/colours";
-import { hexToOklch } from "#utils/colour-convert";
+import { cssColourToOklch } from "#utils/colour-convert";
 import { or } from "#utils/helpers";
 import HueWheel from "#components/hue-wheel/hue-wheel";
 import GradientSlider from "#components/gradient-slider/gradient-slider";
-import { htmlSafe } from "@ember/template";
-import type { SafeString } from "@ember/template";
 import styles from "./tone-picker.module.css";
 
 interface Signature {
@@ -26,8 +24,9 @@ interface Signature {
 }
 
 export default class TonePicker extends Component<Signature> {
-  @tracked hexInput = "";
-  @tracked hexInvalid = false;
+  @tracked colourInput = "";
+  @tracked colourInvalid = false;
+  @tracked inputFocused = false;
 
   get l(): number {
     return this.args.anchor?.l ?? this.args.token?.l ?? 0.5;
@@ -39,9 +38,18 @@ export default class TonePicker extends Component<Signature> {
     return this.args.anchor?.h ?? this.args.token?.h ?? 0;
   }
 
-  get previewStyle(): SafeString {
-    return htmlSafe(`background: oklch(${this.l} ${this.c} ${this.h})`);
+  // Shown in the input when not focused -- reflects the current l/c/h
+  get colourString(): string {
+    const l = Math.round(this.l * 10000) / 100;
+    const c = Math.round(this.c * 10000) / 10000;
+    const h = Math.round(this.h * 10) / 10;
+    return `oklch(${l}% ${c} ${h})`;
   }
+
+  get inputValue(): string {
+    return this.inputFocused ? this.colourInput : this.colourString;
+  }
+
   get isAnchored(): boolean {
     return this.args.anchor !== undefined;
   }
@@ -63,7 +71,7 @@ export default class TonePicker extends Component<Signature> {
     return `oklch(${this.l} ${this.c} ${this.h})`;
   }
   get lDisplay(): string {
-    return this.l.toFixed(3);
+    return `${(this.l * 100).toFixed(1)}%`;
   }
   get cDisplay(): string {
     return this.c.toFixed(3);
@@ -79,35 +87,35 @@ export default class TonePicker extends Component<Signature> {
     this.args.onChange({ l: this.l, c, h: this.h });
   }
 
-  @action onHexInput(e: Event): void {
-    const raw = (e.target as HTMLInputElement).value.trim();
-    this.hexInput = raw;
-    if (!raw) {
-      this.hexInvalid = false;
+  @action onColourFocus(): void {
+    this.inputFocused = true;
+    this.colourInput = this.colourString;
+    this.colourInvalid = false;
+  }
+
+  @action onColourBlur(): void {
+    this.inputFocused = false;
+    this.colourInvalid = false;
+  }
+
+  @action onColourInput(e: Event): void {
+    const raw = (e.target as HTMLInputElement).value;
+    this.colourInput = raw;
+    if (!raw.trim()) {
+      this.colourInvalid = false;
       return;
     }
-    const oklch = hexToOklch(raw);
+    const oklch = cssColourToOklch(raw.trim());
     if (oklch) {
-      this.hexInvalid = false;
+      this.colourInvalid = false;
       this.args.onChange(oklch);
     } else {
-      this.hexInvalid = true;
+      this.colourInvalid = true;
     }
   }
 
   <template>
     <div class={{styles.picker}}>
-      <div class={{styles.hexRow}}>
-        <input
-          class="{{styles.hexInput}} {{if this.hexInvalid styles.invalid}}"
-          type="text"
-          placeholder="#hex"
-          value={{this.hexInput}}
-          {{on "input" this.onHexInput}}
-        />
-        <div class={{styles.preview}} style={{this.previewStyle}}></div>
-      </div>
-
       <div class={{styles.row}}>
         <div class={{styles.wheelCol}}>
           <HueWheel
@@ -142,6 +150,16 @@ export default class TonePicker extends Component<Signature> {
           />
         </div>
       </div>
+
+      <input
+        class="{{styles.colourInput}} {{if this.colourInvalid styles.invalid}}"
+        type="text"
+        placeholder="oklch(…) / #hex / rgb(…)"
+        value={{this.inputValue}}
+        {{on "focus" this.onColourFocus}}
+        {{on "blur" this.onColourBlur}}
+        {{on "input" this.onColourInput}}
+      />
 
       {{#if (or this.isAnchored @isEndpoint)}}
         <div class={{styles.actions}}>
