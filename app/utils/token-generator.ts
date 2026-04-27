@@ -1,7 +1,7 @@
-import { trackedArray } from "@ember/reactive/collections";
-import type { ColourDefinition } from "#utils/colours";
+import { trackedArray, trackedObject } from "@ember/reactive/collections";
+import type { ColourDefinition, Tone } from "#utils/colours";
 import type { BezierCurve } from "#utils/spline";
-import { interpolateRamp, seedAnchors } from "#utils/interpolate";
+import { interpolateRamp, colourFromCurve, makeAnchor } from "#utils/interpolate";
 import type { ToneAnchor, InterpolationMode } from "#utils/interpolate";
 import { DEFAULT_LIGHTNESS_CURVE, DEFAULT_CHROMA_CURVE } from "#utils/spline";
 
@@ -14,17 +14,17 @@ export interface CurveOverride {
 
 export interface ActiveColour {
   definition: ColourDefinition;
-  /** Always present -- seeded on activation from bezier curves */
+  /** User-placed anchors only -- empty on activation */
   anchors: ToneAnchor[];
   /** Colour space used for chroma.js interpolation */
   interpolationMode: InterpolationMode;
-  /** Optional bezier overrides that shape the seeded tone 50/950 anchors */
+  /** Optional bezier overrides */
   curveOverride?: CurveOverride;
 }
 
 export interface ColourToken {
   name: string;
-  tone: import("#utils/colours").Tone;
+  tone: Tone;
   variable: string;
   value: string;
   l: number;
@@ -60,30 +60,44 @@ export function effectiveCurves(
 }
 
 /**
- * Seed a fresh ActiveColour from a definition.
- * Always called when a colour is first activated.
+ * Activate a colour with no anchors. The bezier curves define the ramp shape;
+ * the user adds anchors to override specific tones.
  */
 export function activateColour(
   definition: ColourDefinition,
-  globalCurves: GlobalCurves = DEFAULT_GLOBAL_CURVES,
   interpolationMode: InterpolationMode = DEFAULT_INTERPOLATION_MODE,
 ): ActiveColour {
-  const lightnessCurve = definition.lightnessCurve ?? globalCurves.lightness;
-  const chromaCurve = definition.chromaCurve ?? globalCurves.chroma;
+  const lightnessCurve = definition.lightnessCurve ?? DEFAULT_LIGHTNESS_CURVE;
+  const chromaCurve = definition.chromaCurve ?? DEFAULT_CHROMA_CURVE;
 
-  return {
+  const tone50 = colourFromCurve(50, definition, lightnessCurve, chromaCurve);
+  const tone950 = colourFromCurve(950, definition, lightnessCurve, chromaCurve);
+
+  return trackedObject({
     definition,
-    anchors: trackedArray(seedAnchors(definition, lightnessCurve, chromaCurve)),
+    anchors: trackedArray([
+      makeAnchor(50, tone50.l, tone50.c, tone50.h),
+      makeAnchor(500, definition.lightness, definition.chroma, definition.hue),
+      makeAnchor(950, tone950.l, tone950.c, tone950.h),
+    ]),
     interpolationMode,
-  };
+    curveOverride: undefined,
+  });
 }
 
 /**
- * Generate all colour tokens for the given active colours.
- * Always uses chroma.js interpolation through the colour's anchors.
+ * Generate all colour tokens. Bezier curves provide implicit endpoints;
+ * user anchors are interpolated between them.
  */
 export function generateTokens(activeColours: ActiveColour[]): ColourToken[] {
-  return activeColours.flatMap((active) =>
-    interpolateRamp(active.anchors, active.definition, active.interpolationMode),
-  );
+  return activeColours.flatMap((active) => {
+    const { lightness, chroma } = effectiveCurves(active);
+    return interpolateRamp(
+      active.anchors,
+      active.definition,
+      active.interpolationMode,
+      lightness,
+      chroma,
+    );
+  });
 }

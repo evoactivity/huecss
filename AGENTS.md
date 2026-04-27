@@ -64,12 +64,14 @@ Prettier with `prettier-plugin-ember-template-tag` (handles `.gts`/`.gjs` files)
 
 ### Running a single test
 
+Pass arguments to vitest via `pnpm test:ci --`, not by invoking vitest directly:
+
 ```sh
 # Run one file
-pnpm vitest run tests/components/button.test.gts
+pnpm test:ci -- tests/components/button.test.gts
 
 # Run tests matching a name pattern
-pnpm vitest run -t "button renders"
+pnpm test:ci -- -t "button renders"
 ```
 
 ### Rendering tests vs acceptance tests

@@ -2,6 +2,7 @@ import { describe, test, expect } from "vitest";
 import { generateTokens, activateColour } from "#utils/token-generator";
 import { TONES } from "#utils/colours";
 import type { ActiveColour, ColourToken } from "#utils/token-generator";
+import { makeAnchor } from "#utils/interpolate";
 
 const blueDef = { name: "blue", lightness: 0.546, hue: 264.052, chroma: 0.232 };
 const blue: ActiveColour = activateColour(blueDef);
@@ -38,15 +39,24 @@ describe("generateTokens", () => {
     expect(generateTokens([])).toEqual([]);
   });
 
+  test("starts with anchors at tones 50, 500, and 950", () => {
+    const active = activateColour(blueDef);
+    expect(active.anchors).toHaveLength(3);
+    expect(active.anchors.map((a) => a.tone)).toEqual([50, 500, 950]);
+  });
+
+  test("tone 500 anchor matches the definition colour", () => {
+    const active = activateColour(blueDef);
+    const a500 = active.anchors.find((a) => a.tone === 500)!;
+    expect(a500.l).toBeCloseTo(blueDef.lightness, 3);
+    expect(a500.c).toBeCloseTo(blueDef.chroma, 3);
+    expect(a500.h).toBeCloseTo(blueDef.hue, 1);
+  });
+
   test("adding a user anchor at a tone pins that colour", () => {
-    const withAnchor: ActiveColour = {
-      ...blue,
-      anchors: [
-        ...blue.anchors,
-        { tone: 200 as const, l: 0.9, c: 0.02, h: 100, seeded: false },
-      ].sort((a, b) => a.tone - b.tone),
-    };
-    const tokens = generateTokens([withAnchor]);
+    const active = activateColour(blueDef);
+    active.anchors.push(makeAnchor(200, 0.9, 0.02, 100));
+    const tokens = generateTokens([active]);
     const t200 = tokens.find((t) => t.tone === 200)!;
     expect(t200.l).toBeCloseTo(0.9, 1);
   });

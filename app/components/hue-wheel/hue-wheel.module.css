@@ -10,9 +10,40 @@
   display: block;
   width: 100%;
   height: 100%;
+  cursor: default;
+}
+
+.ring {
   cursor: crosshair;
 }
 
 .indicator {
   pointer-events: none;
+}
+
+/* Focus ring around indicator dot -- shown via focus-within */
+.focusRing {
+  pointer-events: none;
+  stroke: transparent;
+  stroke-width: 2;
+  transition: stroke 0.1s;
+}
+
+.wrapper:focus-within .focusRing {
+  stroke: var(--color-green);
+}
+
+/* Visually hidden range input -- keyboard accessible, invisible */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+  /* Suppress browser focus outline -- the SVG dot provides the visual ring */
+  outline: none !important;
 }

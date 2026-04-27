@@ -29,7 +29,7 @@
 
 .title {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 0.75rem;
   font-weight: 400;
   text-transform: uppercase;
   letter-spacing: 1.2px;
@@ -44,7 +44,7 @@
   height: 20px;
   border-radius: var(--radius-sm);
   color: var(--color-text-muted);
-  font-size: 16px;
+  font-size: 1rem;
   line-height: 1;
   transition:
     color 0.1s,

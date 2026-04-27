@@ -136,20 +136,4 @@ describe("ColourStudio", () => {
       expect(s.activeColours.every((a) => a.interpolationMode === "lch")).toBe(true);
     });
   });
-
-  describe("css", () => {
-    test("returns empty :root block when nothing active", async () => {
-      await using ctx = await setupRenderingContext(App);
-      const s = ctx.owner.lookup("service:colour-studio") as ColourStudio;
-      expect(s.css).toBe(":root {\n}\n");
-    });
-
-    test("returns CSS with custom properties when colours active", async () => {
-      await using ctx = await setupRenderingContext(App);
-      const s = ctx.owner.lookup("service:colour-studio") as ColourStudio;
-      s.toggleColour(red);
-      expect(s.css).toContain("--color-red-");
-      expect(s.css).toContain(":root");
-    });
-  });
 });

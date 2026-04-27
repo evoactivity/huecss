@@ -3,6 +3,10 @@ import { tracked } from "@glimmer/tracking";
 import { on } from "@ember/modifier";
 import { modifier } from "ember-modifier";
 import { createHighlighter } from "shiki";
+import { generateCss, CSS_OUTPUT_MODES } from "#utils/css-output";
+import type { CssOutputMode } from "#utils/css-output";
+import type { ColourToken } from "#utils/token-generator";
+import PillTabs from "#components/pill-tabs/pill-tabs";
 import styles from "./css-output.module.css";
 
 // Lazily initialise a single shared highlighter instance
@@ -20,7 +24,7 @@ function getHighlighter() {
 
 interface Signature {
   Args: {
-    css: string;
+    tokens: ColourToken[];
   };
 }
 
@@ -28,6 +32,11 @@ export default class CssOutput extends Component<Signature> {
   @tracked highlightedHtml = "";
   @tracked copyLabel = "Copy";
   @tracked isOpen = true;
+  @tracked outputMode: CssOutputMode = "oklch";
+
+  get css(): string {
+    return generateCss(this.args.tokens, this.outputMode);
+  }
 
   highlightModifier = modifier((el: Element, [css]: [string]) => {
     void getHighlighter().then((hl) => {
@@ -42,8 +51,12 @@ export default class CssOutput extends Component<Signature> {
     this.isOpen = !this.isOpen;
   };
 
+  setOutputMode = (mode: CssOutputMode): void => {
+    this.outputMode = mode;
+  };
+
   handleCopy = async (): Promise<void> => {
-    await navigator.clipboard.writeText(this.args.css);
+    await navigator.clipboard.writeText(this.css);
     this.copyLabel = "Copied!";
     setTimeout(() => {
       this.copyLabel = "Copy";
@@ -63,16 +76,25 @@ export default class CssOutput extends Component<Signature> {
           <span class={{styles.toggleLabel}}>CSS output</span>
         </button>
 
-        <button type="button" class={{styles.copyButton}} {{on "click" this.handleCopy}}>
-          {{this.copyLabel}}
-        </button>
+        <div class={{styles.barHeaderRight}}>
+          <PillTabs
+            @options={{CSS_OUTPUT_MODES}}
+            @selected={{this.outputMode}}
+            @onChange={{this.setOutputMode}}
+            @label="CSS output format"
+          />
+
+          <button type="button" class={{styles.copyButton}} {{on "click" this.handleCopy}}>
+            {{this.copyLabel}}
+          </button>
+        </div>
       </div>
 
       {{#if this.isOpen}}
-        <div class={{styles.codeBlock}} {{this.highlightModifier @css}}>
+        <div class={{styles.codeBlock}} {{this.highlightModifier this.css}}>
           {{! Shiki returns sanitised HTML }}
           {{! template-lint-disable no-triple-curlies }}
-          <pre>{{@css}}</pre>
+          <pre>{{this.css}}</pre>
         </div>
       {{/if}}
     </div>

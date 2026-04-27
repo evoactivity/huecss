@@ -8,6 +8,7 @@
 
 declare const bar: string;
 declare const barHeader: string;
+declare const barHeaderRight: string;
 declare const toggle: string;
 declare const toggleIcon: string;
 declare const toggleLabel: string;
@@ -17,6 +18,7 @@ declare const codeBlock: string;
 export {
 	bar,
 	barHeader,
+	barHeaderRight,
 	toggle,
 	toggleIcon,
 	toggleLabel,
@@ -27,6 +29,7 @@ export {
 declare const __default_export__: {
 	bar: typeof bar;
 	barHeader: typeof barHeader;
+	barHeaderRight: typeof barHeaderRight;
 	toggle: typeof toggle;
 	toggleIcon: typeof toggleIcon;
 	toggleLabel: typeof toggleLabel;

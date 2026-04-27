@@ -15,10 +15,6 @@ export interface ToneAnchor {
   l: number;
   c: number;
   h: number;
-  /** True if this anchor was seeded from the bezier curve (not user-placed).
-   *  Seeded anchors at tone 50 and 950 revert to bezier when removed.
-   *  The seeded anchor at tone 500 reverts to the definition value when removed. */
-  seeded: boolean;
 }
 
 /**
@@ -26,8 +22,8 @@ export interface ToneAnchor {
  * Evaluates L and C from the curves (normalised relative to ANCHOR_Y),
  * and uses the definition hue.
  */
-function colourFromCurve(
-  tone: Tone,
+export function colourFromCurve(
+  tone: number,
   definition: ColourDefinition,
   lightnessCurve: BezierCurve,
   chromaCurve: BezierCurve,
@@ -51,72 +47,51 @@ function colourFromCurve(
   return { l, c, h: definition.hue };
 }
 
-/**
- * Seed the initial 3 anchors for a colour from its bezier curves.
- * Tone 50 and 950 come from the bezier; tone 500 comes from the definition.
- */
-export function seedAnchors(
-  definition: ColourDefinition,
-  lightnessCurve: BezierCurve,
-  chromaCurve: BezierCurve,
-): ToneAnchor[] {
-  const tone50 = colourFromCurve(50, definition, lightnessCurve, chromaCurve);
-  const tone950 = colourFromCurve(950, definition, lightnessCurve, chromaCurve);
-
-  return [
-    trackedObject({ tone: 50, ...tone50, seeded: true }),
-    trackedObject({
-      tone: 500,
-      l: definition.lightness,
-      c: definition.chroma,
-      h: definition.hue,
-      seeded: true,
-    }),
-    trackedObject({ tone: 950, ...tone950, seeded: true }),
-  ];
+/** Create a new tracked anchor object */
+export function makeAnchor(tone: Tone, l: number, c: number, h: number): ToneAnchor {
+  return trackedObject({ tone, l, c, h });
 }
 
 /**
- * Revert a seeded anchor to its default value.
- * Tone 50/950 reverts to bezier-derived value; tone 500 reverts to definition.
- */
-export function revertAnchor(
-  tone: Tone,
-  definition: ColourDefinition,
-  lightnessCurve: BezierCurve,
-  chromaCurve: BezierCurve,
-): ToneAnchor {
-  if (tone === 500) {
-    return trackedObject({
-      tone: 500,
-      l: definition.lightness,
-      c: definition.chroma,
-      h: definition.hue,
-      seeded: true,
-    });
-  }
-  return trackedObject({
-    tone,
-    ...colourFromCurve(tone, definition, lightnessCurve, chromaCurve),
-    seeded: true,
-  });
-}
-
-/**
- * Interpolate all 11 tones from a set of anchors using chroma.js.
- * Anchors must include at least tone 50 and tone 950.
- * Returns ColourToken[] for all TONES.
+ * Interpolate all 11 tones from user anchors + implicit bezier endpoints.
+ *
+ * The bezier curves always define tone 50 and tone 950 as implicit endpoints.
+ * User anchors override any tone they sit on and are interpolated between.
+ * If the user has set tone 50 or 950 explicitly those override the bezier.
  */
 export function interpolateRamp(
   anchors: ToneAnchor[],
   definition: ColourDefinition,
   mode: InterpolationMode,
+  lightnessCurve: BezierCurve,
+  chromaCurve: BezierCurve,
 ): ColourToken[] {
-  const sorted = [...anchors].sort((a, b) => a.tone - b.tone);
+  // Implicit endpoints from curves -- always present unless the user has
+  // explicitly removed those anchors (in which case the anchors array won't
+  // contain them and the ramp interpolates freely between what remains).
+  const implicit50 = colourFromCurve(50, definition, lightnessCurve, chromaCurve);
+  const implicit950 = colourFromCurve(950, definition, lightnessCurve, chromaCurve);
 
-  // Build chroma scale from anchor colours and their positions (0-1)
-  const colours = sorted.map((a) => chroma.oklch(a.l, a.c, a.h));
-  const domain = sorted.map((a) => toneToX(a.tone));
+  const hasAnchorAt = (tone: number) => anchors.some((a) => a.tone === tone);
+
+  // Always include tone 50 and 950 as implicit endpoints unless the user has
+  // placed their own anchors there. Tone 500 is only included implicitly when
+  // the user hasn't explicitly removed it -- we detect removal by checking
+  // whether any anchor sits at 500 OR whether the anchors array has anchors on
+  // both sides of 500 (meaning 500 was removed and the ramp should interpolate
+  // freely through it).
+  const userAnchors = [...anchors].sort((a, b) => a.tone - b.tone);
+
+  const scalePoints: Array<{ tone: number; l: number; c: number; h: number }> = [
+    hasAnchorAt(50) ? null : { tone: 50, ...implicit50 },
+    ...userAnchors,
+    hasAnchorAt(950) ? null : { tone: 950, ...implicit950 },
+  ]
+    .filter((p): p is { tone: number; l: number; c: number; h: number } => p !== null)
+    .sort((a, b) => a.tone - b.tone);
+
+  const colours = scalePoints.map((a) => chroma.oklch(a.l, a.c, a.h));
+  const domain = scalePoints.map((a) => toneToX(a.tone));
 
   const scale = chroma.scale(colours).mode(mode).domain(domain);
 
@@ -125,7 +100,6 @@ export function interpolateRamp(
     const col = scale(x).oklch();
     const l = round(Math.max(0, Math.min(1, col[0])), 4);
     const c = round(Math.max(0, col[1]), 4);
-    // oklch hue is NaN for achromatic colours -- fall back to definition hue
     const h = round(isNaN(col[2]) ? definition.hue : col[2], 3);
 
     return {

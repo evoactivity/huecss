@@ -2,8 +2,11 @@ import { describe, test, expect, vi } from "vitest";
 import { setupRenderingContext } from "ember-vitest";
 import { click } from "@ember/test-helpers";
 import CssOutput from "#components/css-output/css-output";
+import { generateTokens, activateColour } from "#utils/token-generator";
 
-const SAMPLE_CSS = ":root {\n  /* red */\n  --color-red-50: oklch(95% 0.01 25);\n}\n";
+const SAMPLE_TOKENS = generateTokens([
+  activateColour({ name: "red", lightness: 0.577, hue: 27.325, chroma: 0.2 }),
+]);
 
 describe("CssOutput", () => {
   test("renders the CSS output toggle label", async () => {
@@ -11,7 +14,7 @@ describe("CssOutput", () => {
 
     await ctx.render(
       // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
-      <template><CssOutput @css={{SAMPLE_CSS}} /></template>,
+      <template><CssOutput @tokens={{SAMPLE_TOKENS}} /></template>,
     );
 
     expect(ctx.element.textContent?.toLowerCase()).toContain("css output");
@@ -22,7 +25,7 @@ describe("CssOutput", () => {
 
     await ctx.render(
       // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
-      <template><CssOutput @css={{SAMPLE_CSS}} /></template>,
+      <template><CssOutput @tokens={{SAMPLE_TOKENS}} /></template>,
     );
 
     const codeBlock = ctx.element.querySelector("[class*='codeBlock']");
@@ -34,7 +37,7 @@ describe("CssOutput", () => {
 
     await ctx.render(
       // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
-      <template><CssOutput @css={{SAMPLE_CSS}} /></template>,
+      <template><CssOutput @tokens={{SAMPLE_TOKENS}} /></template>,
     );
 
     const toggle = ctx.element.querySelector("[class*='toggle']") as HTMLElement;
@@ -49,7 +52,7 @@ describe("CssOutput", () => {
 
     await ctx.render(
       // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
-      <template><CssOutput @css={{SAMPLE_CSS}} /></template>,
+      <template><CssOutput @tokens={{SAMPLE_TOKENS}} /></template>,
     );
 
     const toggle = ctx.element.querySelector("[class*='toggle']") as HTMLElement;
@@ -65,7 +68,7 @@ describe("CssOutput", () => {
 
     await ctx.render(
       // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
-      <template><CssOutput @css={{SAMPLE_CSS}} /></template>,
+      <template><CssOutput @tokens={{SAMPLE_TOKENS}} /></template>,
     );
 
     const copyButton = Array.from(ctx.element.querySelectorAll("button")).find((b) =>
@@ -76,12 +79,11 @@ describe("CssOutput", () => {
 
   test("copy button label changes to Copied! after click", async () => {
     await using ctx = await setupRenderingContext();
-    // Mock clipboard API -- navigator.clipboard is read-only so use defineProperty
     vi.spyOn(navigator.clipboard, "writeText").mockResolvedValue(undefined);
 
     await ctx.render(
       // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
-      <template><CssOutput @css={{SAMPLE_CSS}} /></template>,
+      <template><CssOutput @tokens={{SAMPLE_TOKENS}} /></template>,
     );
 
     const copyButton = Array.from(ctx.element.querySelectorAll("button")).find((b) =>
@@ -90,5 +92,66 @@ describe("CssOutput", () => {
     await click(copyButton);
 
     expect(copyButton.textContent?.trim()).toBe("Copied!");
+  });
+
+  test("renders output mode tabs: oklch, rgb, hsl, hex", async () => {
+    await using ctx = await setupRenderingContext();
+
+    await ctx.render(
+      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
+      <template><CssOutput @tokens={{SAMPLE_TOKENS}} /></template>,
+    );
+
+    const text = ctx.element.textContent ?? "";
+    expect(text).toContain("oklch");
+    expect(text).toContain("rgb");
+    expect(text).toContain("hsl");
+    expect(text).toContain("hex");
+  });
+
+  test("oklch tab is active by default", async () => {
+    await using ctx = await setupRenderingContext();
+
+    await ctx.render(
+      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
+      <template><CssOutput @tokens={{SAMPLE_TOKENS}} /></template>,
+    );
+
+    const activeTab = ctx.element.querySelector("[role='tab'][aria-selected]");
+    expect(activeTab?.textContent?.trim()).toBe("oklch");
+  });
+
+  test("clicking rgb tab changes output to rgb format", async () => {
+    await using ctx = await setupRenderingContext();
+
+    await ctx.render(
+      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
+      <template><CssOutput @tokens={{SAMPLE_TOKENS}} /></template>,
+    );
+
+    const rgbTab = Array.from(ctx.element.querySelectorAll("[role='tab']")).find(
+      (b) => b.textContent?.trim() === "rgb",
+    ) as HTMLElement;
+    await click(rgbTab);
+
+    const pre = ctx.element.querySelector("pre");
+    expect(pre?.textContent).toContain("rgb(");
+  });
+
+  test("clicking hex tab changes output to hex format", async () => {
+    await using ctx = await setupRenderingContext();
+
+    await ctx.render(
+      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
+      <template><CssOutput @tokens={{SAMPLE_TOKENS}} /></template>,
+    );
+
+    const hexTab = Array.from(ctx.element.querySelectorAll("[role='tab']")).find(
+      (b) => b.textContent?.trim() === "hex",
+    ) as HTMLElement;
+    await click(hexTab);
+
+    const pre = ctx.element.querySelector("pre");
+    expect(pre?.textContent).toMatch(/#[0-9a-f]{6}/i);
   });
 });

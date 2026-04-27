@@ -15,7 +15,39 @@ describe("generateCss", () => {
     expect(css).toMatch(/\}[\n]?$/);
   });
 
-  test("each token produces an oklch custom property", () => {
+  test("oklch mode: each token produces an oklch custom property", () => {
+    const tokens = generateTokens([blue]);
+    const css = generateCss(tokens, "oklch");
+    for (const token of tokens) {
+      expect(css).toContain(`${token.variable}: oklch(${token.value});`);
+    }
+  });
+
+  test("rgb mode: each token produces an rgb custom property", () => {
+    const tokens = generateTokens([blue]);
+    const css = generateCss(tokens, "rgb");
+    for (const token of tokens) {
+      expect(css).toContain(`${token.variable}: rgb(`);
+    }
+  });
+
+  test("hsl mode: each token produces an hsl custom property", () => {
+    const tokens = generateTokens([blue]);
+    const css = generateCss(tokens, "hsl");
+    for (const token of tokens) {
+      expect(css).toContain(`${token.variable}: hsl(`);
+    }
+  });
+
+  test("hex mode: each token produces a hex custom property", () => {
+    const tokens = generateTokens([blue]);
+    const css = generateCss(tokens, "hex");
+    for (const token of tokens) {
+      expect(css).toContain(`${token.variable}: #`);
+    }
+  });
+
+  test("defaults to oklch when no mode is given", () => {
     const tokens = generateTokens([blue]);
     const css = generateCss(tokens);
     for (const token of tokens) {

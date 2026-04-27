@@ -55,7 +55,7 @@ export default class IndexRoute extends Component {
         </div>
 
         {{#if this.colourStudio.hasActiveColours}}
-          <CssOutput @css={{this.colourStudio.css}} />
+          <CssOutput @tokens={{this.colourStudio.tokens}} />
         {{/if}}
       </div>
     </div>

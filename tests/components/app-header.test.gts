@@ -42,7 +42,7 @@ describe("AppHeader", () => {
       <template><AppHeader /></template>,
     );
 
-    const active = ctx.element.querySelector(".app-header__tab--active");
+    const active = ctx.element.querySelector("[role='tab'][aria-selected]");
     expect(active?.textContent?.trim()).toBe("oklab");
   });
 

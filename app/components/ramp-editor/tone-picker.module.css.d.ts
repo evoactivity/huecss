@@ -14,6 +14,7 @@ declare const wheelCol: string;
 declare const slidersCol: string;
 declare const actions: string;
 declare const removeButton: string;
+declare const lockButton: string;
 
 export {
 	picker,
@@ -23,7 +24,8 @@ export {
 	wheelCol,
 	slidersCol,
 	actions,
-	removeButton
+	removeButton,
+	lockButton
 };
 
 declare const __default_export__: {
@@ -35,5 +37,6 @@ declare const __default_export__: {
 	slidersCol: typeof slidersCol;
 	actions: typeof actions;
 	removeButton: typeof removeButton;
+	lockButton: typeof lockButton;
 };
 export default __default_export__;

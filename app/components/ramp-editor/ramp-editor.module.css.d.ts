@@ -7,48 +7,27 @@
  */
 
 declare const wrapper: string;
-declare const row: string;
 declare const toneSlot: string;
-declare const dotRow: string;
-declare const dot: string;
-declare const dotEmpty: string;
-declare const dotSeeded: string;
-declare const dotUser: string;
+declare const anchored: string;
 declare const swatch: string;
-declare const swatchAnchored: string;
-declare const swatchActive: string;
+declare const active: string;
 declare const toneLabel: string;
-declare const toneLabelVisible: string;
 
 export {
 	wrapper,
-	row,
 	toneSlot,
-	dotRow,
-	dot,
-	dotEmpty,
-	dotSeeded,
-	dotUser,
+	anchored,
 	swatch,
-	swatchAnchored,
-	swatchActive,
-	toneLabel,
-	toneLabelVisible
+	active,
+	toneLabel
 };
 
 declare const __default_export__: {
 	wrapper: typeof wrapper;
-	row: typeof row;
 	toneSlot: typeof toneSlot;
-	dotRow: typeof dotRow;
-	dot: typeof dot;
-	dotEmpty: typeof dotEmpty;
-	dotSeeded: typeof dotSeeded;
-	dotUser: typeof dotUser;
+	anchored: typeof anchored;
 	swatch: typeof swatch;
-	swatchAnchored: typeof swatchAnchored;
-	swatchActive: typeof swatchActive;
+	active: typeof active;
 	toneLabel: typeof toneLabel;
-	toneLabelVisible: typeof toneLabelVisible;
 };
 export default __default_export__;

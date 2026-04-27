@@ -7,67 +7,6 @@
   overflow: hidden;
 }
 
-/* ── Header ── */
-
-.app-header {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--space-4);
-  background: var(--color-bg-panel);
-  border-bottom: 1px solid var(--color-border-subtle);
-  z-index: 10;
-}
-
-.app-header__wordmark {
-  font-size: 24px;
-  font-weight: 900;
-  color: var(--color-text-primary);
-  letter-spacing: -0.3px;
-}
-
-.app-header__wordmark span {
-  color: var(--color-green);
-  font-weight: 100;
-  text-shadow: 0 0 10px var(--color-green);
-}
-
-/* Interpolation mode tabs */
-.app-header__tabs {
-  display: flex;
-  gap: 2px;
-  padding: 2px;
-  border: 1px solid var(--color-border-default);
-  border-radius: var(--radius-pill);
-}
-
-.app-header__tab {
-  padding: 4px 14px;
-  font-size: 12px;
-  font-weight: 400;
-  font-family: var(--font-mono);
-  color: var(--color-text-muted);
-  border-radius: var(--radius-pill);
-  border: 1px solid transparent;
-  transition:
-    color 0.1s,
-    border-color 0.1s,
-    background 0.1s;
-  cursor: pointer;
-  background: transparent;
-}
-
-.app-header__tab:hover {
-  color: var(--color-text-secondary);
-}
-
-.app-header__tab--active {
-  background: var(--color-bg-raised);
-  border-color: var(--color-green-border);
-  color: var(--color-green);
-}
-
 /* ── Body: left panel + right workspace ── */
 
 .app-body {
@@ -101,7 +40,7 @@
 
 .app-panel__label {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 0.75rem;
   font-weight: 400;
   text-transform: uppercase;
   letter-spacing: 1.2px;
@@ -133,7 +72,7 @@
   justify-content: center;
   height: 100%;
   color: var(--color-text-muted);
-  font-size: 14px;
+  font-size: 1rem;
 }
 
 /* ── Workspace ramp rows ── */
@@ -152,7 +91,7 @@
 
 .workspace-ramp__name {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 0.75rem;
   font-weight: 400;
   text-transform: uppercase;
   letter-spacing: 1.2px;
@@ -163,17 +102,6 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-/* ── Utility classes ── */
-
-.mono-label {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 400;
-  text-transform: uppercase;
-  letter-spacing: 1.2px;
-  color: var(--color-text-muted);
 }
 
 /* Focus ring -- using green accent per design system */

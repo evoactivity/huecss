@@ -6,7 +6,7 @@
 }
 
 .label {
-  font-size: 0.8rem;
+  font-size: 0.875rem;
   font-weight: 500;
   color: oklch(0.4 0 0);
 }
@@ -93,6 +93,6 @@
 }
 
 .hint {
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   color: oklch(0.6 0 0);
 }

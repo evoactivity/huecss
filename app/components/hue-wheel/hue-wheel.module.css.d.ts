@@ -8,17 +8,26 @@
 
 declare const wrapper: string;
 declare const svg: string;
+declare const ring: string;
 declare const indicator: string;
+declare const focusRing: string;
+declare const srOnly: string;
 
 export {
 	wrapper,
 	svg,
-	indicator
+	ring,
+	indicator,
+	focusRing,
+	srOnly
 };
 
 declare const __default_export__: {
 	wrapper: typeof wrapper;
 	svg: typeof svg;
+	ring: typeof ring;
 	indicator: typeof indicator;
+	focusRing: typeof focusRing;
+	srOnly: typeof srOnly;
 };
 export default __default_export__;

@@ -36,8 +36,6 @@ export default class HueWheel extends Component<Signature> {
   });
 
   // Build the hue ring as a series of pie slices, each filled with its hue colour.
-  // Each segment overlaps the next by OVERLAP radians to prevent sub-pixel gaps
-  // letting the background colour bleed through between segments.
   get segments(): Array<{ d: string; fill: string }> {
     const segs: Array<{ d: string; fill: string }> = [];
     const step = 360 / SEGMENTS;
@@ -79,9 +77,13 @@ export default class HueWheel extends Component<Signature> {
     return CY + ((OUTER_R + INNER_R) / 2) * Math.sin(angle);
   }
 
-  // The selected colour for the centre swatch
   get centreStyle(): SafeString {
     return htmlSafe(`fill: oklch(${this.args.lightness} ${this.args.chroma} ${this.args.hue})`);
+  }
+
+  // Indicator focus ring radius -- slightly larger than the dot
+  get focusRingR(): number {
+    return INDICATOR_R + 3;
   }
 
   private pickHueFromEvent(event: PointerEvent): void {
@@ -116,23 +118,38 @@ export default class HueWheel extends Component<Signature> {
     this.isDragging = false;
   };
 
+  onSliderInput = (e: Event): void => {
+    this.args.onChange(parseFloat((e.target as HTMLInputElement).value));
+  };
+
   <template>
     <div class={{styles.wrapper}}>
       <svg
         class={{styles.svg}}
         viewBox="0 0 200 200"
+        aria-hidden="true"
         {{this.registerSvg}}
-        {{on "pointerdown" this.onPointerDown}}
         {{on "pointermove" this.onPointerMove}}
         {{on "pointerup" this.onPointerUp}}
       >
-        {{! Hue ring segments }}
-        {{#each this.segments as |seg|}}
-          <path d={{seg.d}} fill={{seg.fill}} />
-        {{/each}}
+        {{! Ring segments -- pointer events restricted to this group only }}
+        <g class={{styles.ring}} {{on "pointerdown" this.onPointerDown}}>
+          {{#each this.segments as |seg|}}
+            <path d={{seg.d}} fill={{seg.fill}} />
+          {{/each}}
+        </g>
 
-        {{! Centre swatch showing current colour -- smaller than INNER_R to create gap }}
+        {{! Centre swatch showing current colour }}
         <circle cx={{CX}} cy={{CY}} r={{CENTRE_R}} style={{this.centreStyle}} />
+
+        {{! Focus ring -- visible via focus-within on .wrapper }}
+        <circle
+          class={{styles.focusRing}}
+          cx={{this.indicatorX}}
+          cy={{this.indicatorY}}
+          r={{this.focusRingR}}
+          fill="none"
+        />
 
         {{! Indicator dot at selected hue }}
         <circle
@@ -145,6 +162,18 @@ export default class HueWheel extends Component<Signature> {
           stroke-width="1.5"
         />
       </svg>
+
+      {{! Visually hidden range input for keyboard accessibility }}
+      <input
+        class={{styles.srOnly}}
+        type="range"
+        min="0"
+        max="359"
+        step="1"
+        value={{this.args.hue}}
+        aria-label="Hue"
+        {{on "input" this.onSliderInput}}
+      />
     </div>
   </template>
 }

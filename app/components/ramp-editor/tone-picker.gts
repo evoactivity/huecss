@@ -5,7 +5,6 @@ import type { ToneAnchor } from "#utils/interpolate";
 import type { ColourToken } from "#utils/token-generator";
 import type { Tone } from "#utils/colours";
 import { cssColourToOklch } from "#utils/colour-convert";
-import { or } from "#utils/helpers";
 import HueWheel from "#components/hue-wheel/hue-wheel";
 import GradientSlider from "#components/gradient-slider/gradient-slider";
 import styles from "./tone-picker.module.css";
@@ -15,8 +14,8 @@ interface Signature {
     tone: Tone;
     anchor: ToneAnchor | undefined;
     token: ColourToken | undefined;
-    isEndpoint: boolean;
     onChange: (values: { l: number; c: number; h: number }) => void;
+    onLock: () => void;
     onRemove: () => void;
     onClose: () => void;
   };
@@ -37,7 +36,6 @@ export default class TonePicker extends Component<Signature> {
     return this.args.anchor?.h ?? this.args.token?.h ?? 0;
   }
 
-  // Shown in the input when not focused -- reflects the current l/c/h
   get colourString(): string {
     const l = Math.round(this.l * 10000) / 100;
     const c = Math.round(this.c * 10000) / 10000;
@@ -47,13 +45,6 @@ export default class TonePicker extends Component<Signature> {
 
   get inputValue(): string {
     return this.inputFocused ? this.colourInput : this.colourString;
-  }
-
-  get isAnchored(): boolean {
-    return this.args.anchor !== undefined;
-  }
-  get removeLabel(): string {
-    return this.args.isEndpoint ? "Reset to default" : "Remove anchor";
   }
 
   get lightnessGradient(): string {
@@ -162,13 +153,17 @@ export default class TonePicker extends Component<Signature> {
         {{on "input" this.onColourInput}}
       />
 
-      {{#if (or this.isAnchored @isEndpoint)}}
-        <div class={{styles.actions}}>
+      <div class={{styles.actions}}>
+        {{#if this.args.anchor}}
           <button type="button" class={{styles.removeButton}} {{on "click" @onRemove}}>
-            {{this.removeLabel}}
+            Unlock tone
           </button>
-        </div>
-      {{/if}}
+        {{else}}
+          <button type="button" class={{styles.lockButton}} {{on "click" @onLock}}>
+            Lock tone
+          </button>
+        {{/if}}
+      </div>
     </div>
   </template>
 }
