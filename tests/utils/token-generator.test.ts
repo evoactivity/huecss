@@ -53,11 +53,13 @@ describe("generateTokens", () => {
     expect(a500.h).toBeCloseTo(blueDef.hue, 1);
   });
 
-  test("adding a user anchor at a tone pins that colour", () => {
+  test("adding a user anchor at a tone pins that colour exactly", () => {
     const active = activateColour(blueDef);
     active.anchors.push(makeAnchor(200, 0.9, 0.02, 100));
     const tokens = generateTokens([active]);
     const t200 = tokens.find((t) => t.tone === 200)!;
-    expect(t200.l).toBeCloseTo(0.9, 1);
+    expect(t200.l).toBeCloseTo(0.9, 4);
+    expect(t200.c).toBeCloseTo(0.02, 4);
+    expect(t200.h).toBeCloseTo(100, 3);
   });
 });

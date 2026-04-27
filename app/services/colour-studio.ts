@@ -6,8 +6,7 @@ import type { Tone } from "#utils/colours";
 import { DEFAULT_COLOURS } from "#utils/colours";
 import type { ColourDefinition } from "#utils/colours";
 import type { ActiveColour, ColourToken, CurveOverride } from "#utils/token-generator";
-import { generateTokens, activateColour, DEFAULT_INTERPOLATION_MODE } from "#utils/token-generator";
-import type { InterpolationMode } from "#utils/interpolate";
+import { generateTokens, activateColour } from "#utils/token-generator";
 
 class TonePickerState {
   @tracked colourName: string | null = null;
@@ -18,9 +17,8 @@ class TonePickerState {
 export default class ColourStudio extends Service {
   activeColours = trackedArray<ActiveColour>();
   customColours = trackedArray<ColourDefinition>();
-  @tracked interpolationMode: InterpolationMode = DEFAULT_INTERPOLATION_MODE;
 
-  // Global picker state — only one tone picker open at a time across all ramps
+  // Global picker state, only one tone picker open at a time across all ramps.
   openPicker = new TonePickerState();
 
   openTonePicker = (colourName: string, tone: Tone, position: ModalPosition): void => {
@@ -59,20 +57,13 @@ export default class ColourStudio extends Service {
     if (idx !== -1) {
       this.activeColours.splice(idx, 1);
     } else {
-      this.activeColours.push(activateColour(colour, this.interpolationMode));
+      this.activeColours.push(activateColour(colour));
     }
   };
 
   addCustomColour = (colour: ColourDefinition): void => {
     this.customColours.push(colour);
-    this.activeColours.push(activateColour(colour, this.interpolationMode));
-  };
-
-  setInterpolationMode = (mode: InterpolationMode): void => {
-    this.interpolationMode = mode;
-    for (const active of this.activeColours) {
-      active.interpolationMode = mode;
-    }
+    this.activeColours.push(activateColour(colour));
   };
 
   setCurveOverride = (name: string, override: CurveOverride | undefined): void => {

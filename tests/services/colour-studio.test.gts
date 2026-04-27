@@ -118,22 +118,4 @@ describe("ColourStudio", () => {
       expect(s.tokensFor("red")).toEqual([]);
     });
   });
-
-  describe("setInterpolationMode", () => {
-    test("updates interpolationMode", async () => {
-      await using ctx = await setupRenderingContext(App);
-      const s = ctx.owner.lookup("service:colour-studio") as ColourStudio;
-      s.setInterpolationMode("oklab");
-      expect(s.interpolationMode).toBe("oklab");
-    });
-
-    test("updates interpolationMode on all active colours", async () => {
-      await using ctx = await setupRenderingContext(App);
-      const s = ctx.owner.lookup("service:colour-studio") as ColourStudio;
-      s.toggleColour(red);
-      s.toggleColour(blue);
-      s.setInterpolationMode("lch");
-      expect(s.activeColours.every((a) => a.interpolationMode === "lch")).toBe(true);
-    });
-  });
 });
