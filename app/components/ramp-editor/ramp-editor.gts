@@ -39,6 +39,18 @@ export default class RampEditor extends Component<Signature> {
     return this.isOpen ? this.studio.openPicker.tone : null;
   }
 
+  /**
+   * Non-null openTone for use inside the {{#if this.isOpen}} branch in the
+   * template, where the picker tone is guaranteed to be set. Glint cannot
+   * narrow the getter automatically through the if check, so we expose a
+   * separate accessor that asserts non-null.
+   */
+  get openToneRequired(): Tone {
+    const tone = this.studio.openPicker.tone;
+    if (tone === null) throw new Error("openToneRequired read while picker is closed");
+    return tone;
+  }
+
   get anchors(): ToneAnchor[] {
     return this.args.active.anchors;
   }
@@ -129,17 +141,17 @@ export default class RampEditor extends Component<Signature> {
 
       {{#if this.isOpen}}
         <DraggableModal
-          @title="Tone {{this.openTone}}"
+          @title="Tone {{this.openToneRequired}}"
           @position={{this.studio.openPicker.position}}
           @onClose={{this.studio.closeTonePicker}}
         >
           <TonePicker
-            @tone={{this.openTone}}
-            @anchor={{(this.anchorAt this.openTone)}}
-            @token={{(this.tokenAt this.openTone)}}
-            @onChange={{(fn this.onPickerChange this.openTone)}}
-            @onLock={{(fn this.onLockTone this.openTone)}}
-            @onRemove={{(fn this.onRemoveAnchor this.openTone)}}
+            @tone={{this.openToneRequired}}
+            @anchor={{(this.anchorAt this.openToneRequired)}}
+            @token={{(this.tokenAt this.openToneRequired)}}
+            @onChange={{(fn this.onPickerChange this.openToneRequired)}}
+            @onLock={{(fn this.onLockTone this.openToneRequired)}}
+            @onRemove={{(fn this.onRemoveAnchor this.openToneRequired)}}
             @onClose={{this.studio.closeTonePicker}}
           />
         </DraggableModal>

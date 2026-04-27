@@ -20,6 +20,7 @@ describe("TonePicker", () => {
   test("renders hue wheel and sliders", async () => {
     await using ctx = await setupRenderingContext();
     const onChange = vi.fn();
+    const onLock = vi.fn();
     const onRemove = vi.fn();
     const onClose = vi.fn();
 
@@ -31,6 +32,7 @@ describe("TonePicker", () => {
           @anchor={{anchor}}
           @token={{token}}
           @onChange={{onChange}}
+          @onLock={{onLock}}
           @onRemove={{onRemove}}
           @onClose={{onClose}}
         />
@@ -45,6 +47,7 @@ describe("TonePicker", () => {
   test("colour input reflects current colour as oklch string when unfocused", async () => {
     await using ctx = await setupRenderingContext();
     const onChange = vi.fn();
+    const onLock = vi.fn();
     const onRemove = vi.fn();
     const onClose = vi.fn();
 
@@ -56,6 +59,7 @@ describe("TonePicker", () => {
           @anchor={{anchor}}
           @token={{token}}
           @onChange={{onChange}}
+          @onLock={{onLock}}
           @onRemove={{onRemove}}
           @onClose={{onClose}}
         />
@@ -70,6 +74,7 @@ describe("TonePicker", () => {
   test("typing a valid hex colour calls onChange", async () => {
     await using ctx = await setupRenderingContext();
     const onChange = vi.fn();
+    const onLock = vi.fn();
     const onRemove = vi.fn();
     const onClose = vi.fn();
 
@@ -81,6 +86,7 @@ describe("TonePicker", () => {
           @anchor={{anchor}}
           @token={{token}}
           @onChange={{onChange}}
+          @onLock={{onLock}}
           @onRemove={{onRemove}}
           @onClose={{onClose}}
         />
@@ -102,6 +108,7 @@ describe("TonePicker", () => {
   test("shows remove button when anchor is set", async () => {
     await using ctx = await setupRenderingContext();
     const onChange = vi.fn();
+    const onLock = vi.fn();
     const onRemove = vi.fn();
     const onClose = vi.fn();
 
@@ -113,6 +120,7 @@ describe("TonePicker", () => {
           @anchor={{anchor}}
           @token={{token}}
           @onChange={{onChange}}
+          @onLock={{onLock}}
           @onRemove={{onRemove}}
           @onClose={{onClose}}
         />
@@ -125,6 +133,7 @@ describe("TonePicker", () => {
   test("no remove button when no anchor", async () => {
     await using ctx = await setupRenderingContext();
     const onChange = vi.fn();
+    const onLock = vi.fn();
     const onRemove = vi.fn();
     const onClose = vi.fn();
 
@@ -136,6 +145,7 @@ describe("TonePicker", () => {
           @anchor={{undefined}}
           @token={{token}}
           @onChange={{onChange}}
+          @onLock={{onLock}}
           @onRemove={{onRemove}}
           @onClose={{onClose}}
         />
