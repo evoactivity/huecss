@@ -13,10 +13,7 @@ describe("RampEditor", () => {
     await using ctx = await setupRenderingContext(App);
     const tokens = generateTokens([blue]);
 
-    await ctx.render(
-      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
-      <template><RampEditor @active={{blue}} @tokens={{tokens}} /></template>,
-    );
+    await ctx.render(<template><RampEditor @active={{blue}} @tokens={{tokens}} /></template>);
 
     const swatches = ctx.element.querySelectorAll("button[title^='Tone']");
     expect(swatches.length).toBe(TONES.length);
@@ -26,10 +23,7 @@ describe("RampEditor", () => {
     await using ctx = await setupRenderingContext(App);
     const tokens = generateTokens([blue]);
 
-    await ctx.render(
-      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
-      <template><RampEditor @active={{blue}} @tokens={{tokens}} /></template>,
-    );
+    await ctx.render(<template><RampEditor @active={{blue}} @tokens={{tokens}} /></template>);
 
     await click("button[title='Tone 500 (anchored)']");
 
@@ -40,10 +34,7 @@ describe("RampEditor", () => {
     await using ctx = await setupRenderingContext(App);
     const tokens = generateTokens([blue]);
 
-    await ctx.render(
-      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
-      <template><RampEditor @active={{blue}} @tokens={{tokens}} /></template>,
-    );
+    await ctx.render(<template><RampEditor @active={{blue}} @tokens={{tokens}} /></template>);
 
     await click("button[title='Tone 500 (anchored)']");
     await click("button[title='Tone 500 (anchored)']");
@@ -55,10 +46,7 @@ describe("RampEditor", () => {
     await using ctx = await setupRenderingContext(App);
     const tokens = generateTokens([blue]);
 
-    await ctx.render(
-      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
-      <template><RampEditor @active={{blue}} @tokens={{tokens}} /></template>,
-    );
+    await ctx.render(<template><RampEditor @active={{blue}} @tokens={{tokens}} /></template>);
 
     await click("button[title='Tone 500 (anchored)']");
     expect(ctx.element.textContent).toContain("Tone 500");
@@ -72,10 +60,7 @@ describe("RampEditor", () => {
     const active = activateColour({ name: "blue", lightness: 0.546, chroma: 0.232, hue: 264 });
     const tokens = generateTokens([active]);
 
-    await ctx.render(
-      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
-      <template><RampEditor @active={{active}} @tokens={{tokens}} /></template>,
-    );
+    await ctx.render(<template><RampEditor @active={{active}} @tokens={{tokens}} /></template>);
 
     const initialAnchorCount = active.anchors.length;
     expect(initialAnchorCount).toBe(3);

@@ -68,7 +68,7 @@
     "babel-plugin-ember-template-compilation": "4.0.0",
     "concurrently": "9.2.1",
     "ember-eslint": "0.6.1",
-    "ember-vitest": "^0.3.3",
+    "ember-vitest": "^0.4.0",
     "eslint": "9.39.4",
     "playwright": "1.59.1",
     "prettier": "3.8.3",

@@ -20,7 +20,6 @@ describe("PillTabs", () => {
     const state = new TabState();
 
     await ctx.render(
-      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
       <template>
         <PillTabs @options={{OPTIONS}} @selected={{state.selected}} @onChange={{state.onChange}} />
       </template>,
@@ -39,7 +38,6 @@ describe("PillTabs", () => {
     state.selected = "b";
 
     await ctx.render(
-      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
       <template>
         <PillTabs @options={{OPTIONS}} @selected={{state.selected}} @onChange={{state.onChange}} />
       </template>,
@@ -54,7 +52,6 @@ describe("PillTabs", () => {
     const state = new TabState();
 
     await ctx.render(
-      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
       <template>
         <PillTabs @options={{OPTIONS}} @selected={{state.selected}} @onChange={{state.onChange}} />
       </template>,
@@ -72,7 +69,6 @@ describe("PillTabs", () => {
     const label = "My tabs";
 
     await ctx.render(
-      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
       <template>
         <PillTabs
           @options={{OPTIONS}}

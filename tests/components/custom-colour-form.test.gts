@@ -10,7 +10,6 @@ describe("CustomColourForm", () => {
     const onAdd = vi.fn();
 
     await ctx.render(
-      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
       <template><CustomColourForm @existingNames={{(array)}} @onAdd={{onAdd}} /></template>,
     );
 
@@ -23,7 +22,6 @@ describe("CustomColourForm", () => {
     const onAdd = vi.fn();
 
     await ctx.render(
-      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
       <template><CustomColourForm @existingNames={{(array)}} @onAdd={{onAdd}} /></template>,
     );
 
@@ -37,7 +35,6 @@ describe("CustomColourForm", () => {
     const existingNames = ["brand"];
 
     await ctx.render(
-      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
       <template><CustomColourForm @existingNames={{existingNames}} @onAdd={{onAdd}} /></template>,
     );
 
@@ -50,7 +47,6 @@ describe("CustomColourForm", () => {
     const onAdd = vi.fn();
 
     await ctx.render(
-      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
       <template><CustomColourForm @existingNames={{(array)}} @onAdd={{onAdd}} /></template>,
     );
 

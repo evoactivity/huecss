@@ -106,8 +106,8 @@ importers:
         specifier: 0.6.1
         version: 0.6.1(@babel/core@7.29.0)(@typescript-eslint/parser@8.59.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3)
       ember-vitest:
-        specifier: ^0.3.3
-        version: 0.3.3(@babel/core@7.29.0)(@ember/test-helpers@5.4.1(@babel/core@7.29.0)(@glint/template@1.7.7))(vitest@4.1.5)
+        specifier: ^0.4.0
+        version: 0.4.0(@babel/core@7.29.0)(@ember/test-helpers@5.4.1(@babel/core@7.29.0)(@glint/template@1.7.7))(@glint/template@1.7.7)(vitest@4.1.5)
       eslint:
         specifier: 9.39.4
         version: 9.39.4(jiti@2.6.1)
@@ -2490,12 +2490,16 @@ packages:
   ember-strict-application-resolver@0.1.1:
     resolution: {integrity: sha512-/49JZ2Yk2ggicAGIoFNWcz05llhe2i+/2dpH5Pv1KlwZOBKkqMMJpTKEB4IMg+FjKBiE0r2yxuZzo9Oly9vc1A==}
 
-  ember-vitest@0.3.3:
-    resolution: {integrity: sha512-Fac31ULUrqSyvB0qw1F/+Vny5XBB+c8aT7Um9D3xt4AKbBNeu7fCgQmPMp7CofLGM165WPYQ6YZvlP/bYW8LWA==}
+  ember-vitest@0.4.0:
+    resolution: {integrity: sha512-dHm+DPHnDydcjBs/J4pL6RW5GS1kFO72XBYNjdT1HU6o6ZGJKngIutwyhVYDJMsQ/qdJMMvQLgXnCUNcSjCATw==}
     engines: {node: ^20.11.0 || ^22 || >=24}
     peerDependencies:
       '@ember/test-helpers': '>=4.0.0'
+      '@glint/template': ^1.0.0
       vitest: ^4.0.8
+    peerDependenciesMeta:
+      '@glint/template':
+        optional: true
 
   emoji-regex@8.0.0:
     resolution: {integrity: sha512-MSjYzcWNOA0ewAHpz0MxpYFvwg6yjy1NG3xteoqz644VCo/RPgnr1/GGt+ic3iJTzQ8Eu3TdM14SawnVUmGE6A==}
@@ -7256,11 +7260,13 @@ snapshots:
       - '@babel/core'
       - supports-color
 
-  ember-vitest@0.3.3(@babel/core@7.29.0)(@ember/test-helpers@5.4.1(@babel/core@7.29.0)(@glint/template@1.7.7))(vitest@4.1.5):
+  ember-vitest@0.4.0(@babel/core@7.29.0)(@ember/test-helpers@5.4.1(@babel/core@7.29.0)(@glint/template@1.7.7))(@glint/template@1.7.7)(vitest@4.1.5):
     dependencies:
       '@ember/test-helpers': 5.4.1(@babel/core@7.29.0)(@glint/template@1.7.7)
       ember-strict-application-resolver: 0.1.1(@babel/core@7.29.0)
       vitest: 4.1.5(@types/node@25.6.0)(@vitest/browser-playwright@4.1.5)(@vitest/browser-preview@4.1.5)(@vitest/ui@4.1.5)(happy-dom@20.9.0)(jsdom@25.0.1)(vite@7.3.2(@types/node@25.6.0)(jiti@2.6.1)(terser@5.46.2))
+    optionalDependencies:
+      '@glint/template': 1.7.7
     transitivePeerDependencies:
       - '@babel/core'
       - supports-color

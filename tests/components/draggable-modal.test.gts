@@ -11,7 +11,6 @@ describe("DraggableModal", () => {
     const onClose = vi.fn();
 
     await ctx.render(
-      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
       <template>
         <DraggableModal @title="Test" @position={{POSITION}} @onClose={{onClose}}>
           <span id="inner">hello</span>
@@ -27,7 +26,6 @@ describe("DraggableModal", () => {
     const onClose = vi.fn();
 
     await ctx.render(
-      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
       <template>
         <DraggableModal @title="Tone 500" @position={{POSITION}} @onClose={{onClose}}>
           content
@@ -43,7 +41,6 @@ describe("DraggableModal", () => {
     const onClose = vi.fn();
 
     await ctx.render(
-      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
       <template>
         <DraggableModal @title="Test" @position={{POSITION}} @onClose={{onClose}}>
           content
@@ -61,7 +58,6 @@ describe("DraggableModal", () => {
     const onClose = vi.fn();
 
     await ctx.render(
-      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
       <template>
         <DraggableModal @title="Test" @position={{POSITION}} @onClose={{onClose}}>
           content
@@ -79,7 +75,6 @@ describe("DraggableModal", () => {
     const onClose = vi.fn();
 
     await ctx.render(
-      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
       <template>
         <DraggableModal @title="Test" @position={{POSITION}} @onClose={{onClose}}>
           <span id="inner">content</span>
@@ -102,7 +97,6 @@ describe("DraggableModal", () => {
     const onClose = vi.fn();
 
     await ctx.render(
-      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
       <template>
         <DraggableModal @title="Test" @position={{POSITION}} @onClose={{onClose}}>
           content
@@ -123,7 +117,6 @@ describe("DraggableModal", () => {
     const onClose = vi.fn();
 
     await ctx.render(
-      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
       <template>
         <DraggableModal @title="Test" @position={{POSITION}} @onClose={{onClose}}>
           <span id="inner">content</span>
@@ -145,7 +138,6 @@ describe("DraggableModal", () => {
     const position = { x: 42, y: 99 };
 
     await ctx.render(
-      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
       <template>
         <DraggableModal @title="Test" @position={{position}} @onClose={{onClose}}>
           content

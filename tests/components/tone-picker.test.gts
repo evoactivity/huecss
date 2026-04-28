@@ -25,7 +25,6 @@ describe("TonePicker", () => {
     const onClose = vi.fn();
 
     await ctx.render(
-      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
       <template>
         <TonePicker
           @tone={{500}}
@@ -52,7 +51,6 @@ describe("TonePicker", () => {
     const onClose = vi.fn();
 
     await ctx.render(
-      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
       <template>
         <TonePicker
           @tone={{500}}
@@ -79,7 +77,6 @@ describe("TonePicker", () => {
     const onClose = vi.fn();
 
     await ctx.render(
-      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
       <template>
         <TonePicker
           @tone={{500}}
@@ -113,7 +110,6 @@ describe("TonePicker", () => {
     const onClose = vi.fn();
 
     await ctx.render(
-      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
       <template>
         <TonePicker
           @tone={{200}}
@@ -138,7 +134,6 @@ describe("TonePicker", () => {
     const onClose = vi.fn();
 
     await ctx.render(
-      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
       <template>
         <TonePicker
           @tone={{200}}

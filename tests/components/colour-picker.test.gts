@@ -16,7 +16,6 @@ describe("ColourPicker", () => {
     const onToggle = vi.fn();
 
     await ctx.render(
-      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
       <template>
         <ColourPicker @colours={{colours}} @activeColours={{(array)}} @onToggle={{onToggle}} />
       </template>,
@@ -31,7 +30,6 @@ describe("ColourPicker", () => {
     const onToggle = vi.fn();
 
     await ctx.render(
-      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
       <template>
         <ColourPicker @colours={{colours}} @activeColours={{(array)}} @onToggle={{onToggle}} />
       </template>,
@@ -49,7 +47,6 @@ describe("ColourPicker", () => {
     const onToggle = vi.fn();
 
     await ctx.render(
-      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
       <template>
         <ColourPicker @colours={{colours}} @activeColours={{(array)}} @onToggle={{onToggle}} />
       </template>,
@@ -66,7 +63,6 @@ describe("ColourPicker", () => {
     const activeColours = [activateColour(red)];
 
     await ctx.render(
-      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
       <template>
         <ColourPicker
           @colours={{colours}}
@@ -88,7 +84,6 @@ describe("ColourPicker", () => {
     const empty: ColourDefinition[] = [];
 
     await ctx.render(
-      // @ts-expect-error -- TemplateOnlyComponent type mismatch in ember-vitest ctx.render
       <template>
         <ColourPicker @colours={{empty}} @activeColours={{(array)}} @onToggle={{onToggle}} />
       </template>,
