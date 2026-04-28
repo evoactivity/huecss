@@ -7,7 +7,7 @@ Thanks for taking an interest. This file is for human contributors. The same con
 Versions are pinned in `.prototools` and managed with [proto](https://moonrepo.dev/proto). If you don't use proto, install Node 25.9.0 and pnpm 10.33.2 by hand.
 
 ```sh
-git clone https://github.com/anomalyco/huecss.git
+git clone https://github.com/evoactivity/huecss.git
 cd huecss
 pnpm install
 pnpm dev
