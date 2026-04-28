@@ -2,7 +2,7 @@
 
 ## Stack
 
-Ember Octane app using Embroider + Vite. TypeScript with Glint for template type-checking.
+Ember app using Embroider + Vite. TypeScript with Glint for template type-checking.
 Components use `.gts` (Glimmer TypeScript) files with `<template>` tag syntax.
 Tests run in-browser via Vitest + `@vitest/browser` (Chromium via Playwright or Preview provider).
 
@@ -29,9 +29,7 @@ CI runs `pnpm lint` then `pnpm test` in separate jobs.
 
 ## Module resolution
 
-Package imports use subpath imports (`#app/*`, `#components/*`, `#services/*`, `#utils/*`, `#config`, `#test-helpers/*`) defined in `package.json` `imports`. Use these instead of relative paths where applicable.
-
-- `#test-helpers/*` maps to `tests/helpers/*` -- that directory does not exist by default; create it if needed.
+Package imports use subpath imports (`#app/*`, `#components/*`, `#services/*`, `#utils/*`, `#config`) defined in `package.json` `imports`. Use these instead of relative paths where applicable.
 
 ## App structure
 
@@ -74,11 +72,13 @@ pnpm test:ci -- tests/components/button.test.gts
 pnpm test:ci -- -t "button renders"
 ```
 
-### Rendering tests vs acceptance tests
+### Rendering, unit, and acceptance tests
 
-**Rendering tests** render a single component in isolation using `setupRenderingContext` from `ember-vitest`. Use these for components and most logic. See `tests/test.test.gts` for the pattern.
+**Rendering tests** render a single component in isolation using `setupRenderingContext` from `ember-vitest`. Use these for components and most logic. `tests/components/app-header.test.gts` is a minimal example, `tests/components/ramp-editor.test.gts` shows the pattern with interaction.
 
-**Acceptance tests** boot the real app via Playwright. Use these only for full route transitions and URL behaviour. They live in `tests/` alongside rendering tests but drive the dev server directly.
+**Unit tests** for plain TypeScript modules live in `tests/utils/` as `.test.ts` files. They do not need a rendering context. See `tests/utils/interpolate.test.ts`.
+
+**Acceptance tests** boot the real app via Playwright. Use these only for full route transitions and URL behaviour. They live in `tests/` alongside rendering tests but drive the dev server directly. None exist in the repo yet.
 
 ## Routing
 
@@ -92,9 +92,9 @@ Lazy route bundles are the intended pattern for code-splitting. The mechanism is
 
 ## Deployment
 
-`pnpm build` outputs to `dist/`. The app deploys to GitHub Pages at `/huecss/`.
+`pnpm build` outputs to `dist/`. The app deploys to GitHub Pages, served from the custom domain https://huecss.dev/.
 
-Both `rootURL` in `app/config.ts` and `base` in `vite.config.mjs` are set to `/huecss/` and must stay in sync. A `removeCrossOrigin` Vite plugin strips the `crossorigin` attribute from script tags, which is required for GitHub Pages compatibility.
+Both `rootURL` in `app/config.ts` and `base` in `vite.config.mjs` are set to `/` and must stay in sync. A `removeCrossOrigin` Vite plugin strips the `crossorigin` attribute from script tags, which is required for GitHub Pages compatibility.
 
 ## Writing components
 

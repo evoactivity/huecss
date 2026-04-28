@@ -35,6 +35,9 @@ export default defineConfig(({ command }) => ({
       enabled: true,
       headless: isCI,
       instances: [{ browser: "chromium" }],
+      // Don't write a PNG on every failed assertion, the failure message
+      // already tells us what we need and the files clutter the tree.
+      screenshotFailures: false,
     },
   },
   plugins: [

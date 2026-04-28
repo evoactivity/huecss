@@ -13,7 +13,6 @@
       "#config": ["./app/config.ts"],
       "#components/*": ["./app/components/*"],
       "#services/*": ["./app/services/*"],
-      "#test-helpers/*": ["./tests/helpers/*"],
       "#utils/*": ["./app/utils/*"]
     }
   }
