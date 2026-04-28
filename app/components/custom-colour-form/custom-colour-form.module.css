@@ -87,7 +87,7 @@
 .nameRow {
   display: flex;
   gap: 0.5rem;
-  align-items: flex-end;
+  align-items: flex-start;
   min-width: 0;
 }
 
