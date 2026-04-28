@@ -5,6 +5,7 @@ import { preview } from "@vitest/browser-preview";
 import { playwright } from "@vitest/browser-playwright";
 import { patchCssModules } from "vite-css-modules";
 import { emberSsg } from "vite-ember-ssr/vite-plugin";
+import svgJar from "@svg-jar/plugin/vite";
 
 const isCI = process.env.CI === "true";
 
@@ -44,6 +45,7 @@ export default defineConfig(({ command }) => ({
     patchCssModules({
       generateSourceTypes: true,
     }),
+    svgJar({ target: "ember" }),
     ember(),
     babel({
       babelHelpers: "runtime",

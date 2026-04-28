@@ -21,3 +21,25 @@
   font-weight: 100;
   text-shadow: 0 0 10px var(--color-green);
 }
+
+.repoLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  border-radius: 4px;
+  padding: 4px;
+  transition: color 0.15s;
+}
+
+.repoLink:hover,
+.repoLink:focus-visible {
+  color: var(--color-green);
+}
+
+.repoIcon {
+  width: 22px;
+  height: 22px;
+  display: block;
+}

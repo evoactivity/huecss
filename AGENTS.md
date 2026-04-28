@@ -90,6 +90,18 @@ Lazy route bundles are the intended pattern for code-splitting. The mechanism is
 - Component-scoped styles use CSS modules: `alert.module.css` imported into `alert.gts`.
 - Both approaches can coexist; use global styles for tokens/resets and CSS modules for component styles.
 
+## Icons and SVGs
+
+SVGs are imported as Glimmer components via `@svg-jar/plugin` (configured in `vite.config.mjs` with `target: "ember"`). Drop SVGs into `app/icons/` and import them like components:
+
+```ts
+import GithubMark from "#app/icons/github.svg";
+```
+
+Use `currentColor` for fill/stroke in the SVG file so the icon inherits the parent's CSS color. The plugin generates a sprite sheet at build time and renders inline self-contained SVGs in dev mode.
+
+The plugin's `*.svg` module declaration conflicts with `vite/client`'s `string` declaration. To resolve it, `@svg-jar/plugin/client/ember` is listed first in `tsconfig.json` `compilerOptions.types`, before `vite/client`.
+
 ## Deployment
 
 `pnpm build` outputs to `dist/`. The app deploys to GitHub Pages, served from the custom domain https://huecss.dev/.

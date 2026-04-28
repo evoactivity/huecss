@@ -3,6 +3,7 @@
   "compilerOptions": {
     "allowJs": true,
     "types": [
+      "@svg-jar/plugin/client/ember",
       "ember-source/types",
       "@embroider/core/virtual",
       "vite/client",

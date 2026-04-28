@@ -8,14 +8,20 @@
 
 declare const header: string;
 declare const wordmark: string;
+declare const repoLink: string;
+declare const repoIcon: string;
 
 export {
 	header,
-	wordmark
+	wordmark,
+	repoLink,
+	repoIcon
 };
 
 declare const __default_export__: {
 	header: typeof header;
 	wordmark: typeof wordmark;
+	repoLink: typeof repoLink;
+	repoIcon: typeof repoIcon;
 };
 export default __default_export__;
