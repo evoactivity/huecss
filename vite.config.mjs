@@ -26,7 +26,11 @@ export default defineConfig(({ command }) => ({
     },
   },
   optimizeDeps: {
-    include: ["ember-source/@ember/service/index.js", "@embroider/router"],
+    include: [
+      "ember-source/@ember/service/index.js",
+      "@embroider/router",
+      "@svg-jar/plugin/runtime/ember",
+    ],
   },
   test: {
     include: ["tests/**/*.test.{gjs,gts,ts}"],
